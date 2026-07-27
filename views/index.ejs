@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <!-- Tailwind ile derlenen CSS dosyamız -->
+    <link rel="stylesheet" href="/css/output.css">
+</head>
+
+<body class="bg-gray-50 text-gray-800 flex items-center justify-center min-h-screen">
+    <div class="products flex gap-x-4 items-center justify-center border border-black p-4">
+        <% if (products.length > 0) { %>
+            <% products.forEach(product => {%> 
+                <%- include('product-box', { product: product }) %>   
+            <% }); %>    
+        <% } %>            
+    </div>
+    
+</body>
+
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "27072026_e_commerce",
+  "version": "1.0.0",
+  "main": "mrouter.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "tailwind": "npx @tailwindcss/cli -i ./public/css/input.css -o ./public/css/output.css --watch",
+    "dev": "nodemon server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "tailwindcss": "^4.3.3"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "@tailwindcss/vite": "^4.3.3",
+    "ejs": "^6.0.1",
+    "express": "^5.2.1"
+  }
+}
