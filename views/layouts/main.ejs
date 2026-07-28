@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        Ahmet Elektronik | <%= title %>
+    </title>
+    <!-- Tailwind ile derlenen CSS dosyamız -->
+    <link rel="stylesheet" href="/css/output.css">
+</head>
+
+<body class="bg-gray-50 text-gray-800 min-h-screen">
+    <header class="w-full h-20 bg-blue-400 flex items-center justify-center">
+        <div class="container w-3/4 h-full flex justify-between items-center">
+            <nav class="header-navbar flex gap-x-4 justify-center items-center">
+                <h1><a href="/">Ana Sayfa</a></h1>
+                <h1><a href="/products">Ürünler</a></h1>
+            </nav>
+            <div class="header-content flex gap-x-4 items-center">
+                <a href="#">Sepetim (x)</a>
+                <a href="/login">
+                    <button class="btn-login px-6 py-2 text-bold bg-blue-600 text-white text-center cursor-pointer hover:bg-blue-700 transtiion-all duration-300">
+                        Giriş Yap
+                    </button>
+                </a>
+            </div>
+        </div>
+    </header>
+    <div class="border border-cyan-950">
+        <%- body %>
+    </div>
+</body>
+
+</html>

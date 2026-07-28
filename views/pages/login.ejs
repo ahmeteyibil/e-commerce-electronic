@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ahmet Elektronik | <%= title %></title>
+    <link rel="stylesheet" href="/css/output.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.0/css/all.min.css" integrity="sha512-ApSLB1Pd3/bZN8fWB/RG9YhN/7bd9Hkf3AGaE2mPfebjrxagjuBtx2GcgdqIlJkUzwylBo61r9Xa9NmgBI0swA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="w-full h-screen bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center">
+    <div class="login-box bg-[#0B0521] text-white p-4 border border-black border-solid flex flex-col gap-y-4 items-center justify-center">
+        <h1>Login</h1>
+        <form action="login" method="post" class="flex flex-col gap-y-4">
+            <div class="input-box flex items-center justify-between h-12 px-4 gap-x-2 border border-solid border-white rounded-lg">
+                <i class="fa-solid fa-envelope"></i>
+                <input class="flex-1 h-full outline-none" type="text" name="email" placeholder="Email">
+            </div>
+            <div class="input-box flex items-center justify-between h-12 px-4 gap-x-2 border border-solid border-white rounded-lg">
+                <i class="fa-solid fa-key"></i>
+                <input class="flex-1 h-full outline-none" type="password" name="password" placeholder="Password">
+            </div>
+            <button class="submit-button px-4 py-2 rounded-lg border border-solid border-black bg-blue-700 transition-all duration-300 hover:bg-blue-900 cursor-pointer" type="submit">Giriş Yap</button>
+        </form>
+    </div>
+</body>
+</html>

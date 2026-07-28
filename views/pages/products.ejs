@@ -1,0 +1,7 @@
+<div class="products flex gap-x-4 items-center justify-center border border-black p-4">
+        <% if (products.length > 0) { %>
+            <% products.forEach(product => {%> 
+                <%- include('../product-box', { product: product }) %>   
+            <% }); %>    
+        <% } %>            
+</div>
