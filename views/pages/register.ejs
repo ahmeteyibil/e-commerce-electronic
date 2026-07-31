@@ -9,8 +9,12 @@
 </head>
 <body class="w-full h-screen bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center">
     <div class="login-box bg-[#0B0521] text-white p-16 rounded-2xl border border-black border-solid flex flex-col gap-y-8 items-center justify-center">
-        <h1 class="text-3xl font-bold">Login</h1>
-        <form action="login" method="post" class="flex flex-col gap-y-4">
+        <h1 class="text-3xl font-bold">Register</h1>
+        <form action="register" method="post" class="flex flex-col gap-y-4">
+            <div class="input-box flex items-center justify-between h-12 px-4 gap-x-2 border border-solid border-white rounded-lg">
+                <i class="fa-solid fa-address-card"></i>
+                <input class="flex-1 h-full outline-none" type="text" name="name" placeholder="Name">
+            </div>
             <div class="input-box flex items-center justify-between h-12 px-4 gap-x-2 border border-solid border-white rounded-lg">
                 <i class="fa-solid fa-envelope"></i>
                 <input class="flex-1 h-full outline-none" type="text" name="email" placeholder="Email">
@@ -19,9 +23,13 @@
                 <i class="fa-solid fa-key"></i>
                 <input class="flex-1 h-full outline-none" type="password" name="password" placeholder="Password">
             </div>
-            <button class="submit-button px-4 py-2 rounded-lg border border-solid border-black bg-blue-700 transition-all duration-300 hover:bg-blue-900 cursor-pointer" type="submit">Giriş Yap</button>
+            <div class="input-box flex items-center justify-between h-12 px-4 gap-x-2 border border-solid border-white rounded-lg">
+                <i class="fa-solid fa-key"></i>
+                <input class="flex-1 h-full outline-none" type="password" name="password_again" placeholder="Password again">
+            </div>
+            <button class="submit-button px-4 py-2 rounded-lg border border-solid border-black bg-blue-700 transition-all duration-300 hover:bg-blue-900 cursor-pointer" type="submit">Kayıt ol</button>
         </form>
-        <span>Hesabın yok mu? <a class="font-bold" href="/register">Kayıt ol</a></span>
+        <span>Zaten bir hesabın var mı? <a class="font-bold" href="login">Giriş Yap</a></span>
         <a href="/">Ana sayfaya dön</a>
     </div>
 </body>

@@ -18,9 +18,12 @@
     "@tailwindcss/cli": "^4.3.3",
     "@tailwindcss/vite": "^4.3.3",
     "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
     "ejs": "^6.0.1",
     "express": "^5.2.1",
     "express-ejs-layouts": "^2.5.1",
-    "pg": "^8.22.0"
+    "express-session": "^1.19.0",
+    "pg": "^8.22.0",
+    "uuid": "^14.0.1"
   }
 }

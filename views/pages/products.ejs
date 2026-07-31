@@ -1,7 +1,44 @@
-<div class="products flex gap-x-4 items-center justify-center border border-black p-4">
-        <% if (products.length > 0) { %>
-            <% products.forEach(product => {%> 
-                <%- include('../product-box', { product: product }) %>   
-            <% }); %>    
-        <% } %>            
+<div class="flex flex-col gap-y-4 items-center justify-center my-8">
+    <h1 class="text-4xl capitalize font-bold">Revaçtaki ürünler</h1>
+    <div class="products flex gap-x-4 items-center justify-center border border-black p-4">
+        <% if (products.length> 0) { %>
+            <% products.forEach(product=> {%>
+                <%- include('../product-box', { product: product }) %>
+                    <% }); %>
+                        <% } %>
+    </div>
 </div>
+
+<script>
+    // Sayfadaki HERHANGİ bir tıklamayı dinliyoruz
+    document.addEventListener('click', async (e) => {
+
+        // Tıklanan öğe veya onun ebeveyni 'add-to-cart-btn' sınıfına sahip mi bakıyoruz
+        const btn = e.target.closest('.add-to-cart-btn');
+
+        // Eğer tıklanan şey sepete ekle butonuysa işlemi başlat
+        if (btn) {
+            const productId = btn.dataset.productId;
+            console.log("Frontend'den gönderilecek ID:", productId); // BUNA BAK
+            try {
+                const response = await fetch('/cart/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ productId })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Header'daki sepet sayacını güncelliyoruz
+                    const cartCounter = document.getElementById('cart-count');
+                    if (cartCounter) {
+                        cartCounter.innerText = data.cartCount;
+                    }
+                }
+            } catch (err) {
+                console.error("Sepete ekleme hatası:", err);
+            }
+        }
+    });
+</script>
