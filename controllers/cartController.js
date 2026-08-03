@@ -15,10 +15,10 @@ const addItemToCart = async (req, res) => {
         const dateOfNow = new Date();
         if (userId) {
             let cartResult = await pool.query('SELECT id FROM carts WHERE user_id = $1', [userId]);
-            
+
             if (cartResult.rows.length === 0) {
                 // Sepet yoksa oluştur ve ID'sini al
-                cartResult = await pool.query('INSERT INTO carts (user_id,created_at) VALUES ($1,$2) RETURNING id', [userId,dateOfNow]);
+                cartResult = await pool.query('INSERT INTO carts (user_id,created_at) VALUES ($1,$2) RETURNING id', [userId, dateOfNow]);
             }
             cartId = cartResult.rows[0].id;
 
@@ -26,7 +26,7 @@ const addItemToCart = async (req, res) => {
             let cartResult = await pool.query('SELECT id FROM carts WHERE guest_token = $1', [guestToken]);
             if (cartResult.rows.length === 0) {
                 // Sepet yoksa oluştur ve ID'sini al
-                cartResult = await pool.query('INSERT INTO carts (guest_token,created_at) VALUES ($1,$2) RETURNING id', [guestToken,dateOfNow]);
+                cartResult = await pool.query('INSERT INTO carts (guest_token,created_at) VALUES ($1,$2) RETURNING id', [guestToken, dateOfNow]);
             }
             cartId = cartResult.rows[0].id;
         }
@@ -39,11 +39,11 @@ const addItemToCart = async (req, res) => {
             INSERT INTO cart_items (cart_id, product_id, quantity) 
             VALUES ($1, $2, 1)
             ON CONFLICT (cart_id, product_id) 
-            DO UPDATE SET quantity = cart_items.quantity + 1;
+            DO UPDATE SET quantity = (cart_items.quantity + 1) RETURNING quantity;
         `;
         // Tek sorguda ürünü ekliyor, eğer zaten o sepette o ürün varsa sayısını 1 artırıyor.
-        await pool.query(upsertItemQuery, [cartId, productId]);
-
+        const upsertResult = await pool.query(upsertItemQuery, [cartId, productId]);
+        const { newQuantity } = upsertResult.rows[0];
         // ==========================================
         // 3. ADIM: GÜNCEL SEPET SAYISINI HESAPLA (Header için)
         // ==========================================
@@ -56,10 +56,11 @@ const addItemToCart = async (req, res) => {
         const totalCount = countResult.rows[0].total;
 
         // Frontend'e başarı durumunu ve yeni sepet sayısını JSON olarak dön
-        res.json({ 
-            success: true, 
-            message: "Ürün başarıyla eklendi.", 
-            cartCount: parseInt(totalCount, 10) 
+        res.json({
+            success: true,
+            message: "Ürün başarıyla eklendi.",
+            cartCount: parseInt(totalCount, 10),
+            newQuantity: newQuantity
         });
 
     } catch (err) {
@@ -68,13 +69,93 @@ const addItemToCart = async (req, res) => {
     }
 };
 
-const getCartPage = async (req,res) =>{
+const getCartPage = async (req, res) => {
     // Kart itemlerini al ve bir listeye at.
+    const userId = req.session.user ? req.session.user.id : null;
+    const guestToken = req.guestToken ? req.guestToken : null;
 
-    // Render
-    res.render("./pages/cart", {title: "Sepetim"/*, cartItems*/ })
+    let getCartIdQuery = "";
+    let parameters = []
+    if (userId) {
+        getCartIdQuery = "SELECT id from carts WHERE user_id = $1";
+        parameters = [userId];
+    }
+    else if (guestToken) {
+        getCartIdQuery = "SELECT id from carts WHERE guest_token = $1";
+        parameters = [guestToken];
+    }
+    try {
+        if (getCartIdQuery !== "") {
+            const cartIdResults = await pool.query(getCartIdQuery, parameters);
+            var cartItemsWithProduct;
+            const { id } = cartIdResults.rows[0];
+            console.log("İtemleri çekilecek olan sepetin id'si: ", id);
+            let getItemsQuery = "SELECT row_to_json(ci) AS cart_item, row_to_json(p) AS product FROM cart_items ci JOIN products p ON ci.product_id = p.id WHERE ci.cart_id = $1";
+            const results = await pool.query(getItemsQuery, [id]);
+            cartItemsWithProduct = results.rows;
+
+        }
+        res.render("./pages/cart", { title: "Sepetim", cartItemsWithProduct: cartItemsWithProduct })
+    } catch (er) {
+        console.log("Sepet verileri çekilirken hata oluştu: ", er.message);
+        res.status(500);
+    }
+
 }
+
+const decreaseQuantityFromCart = async (req, res) => {
+    console.log("decreaseQuantityFromCart() worked.")
+    const { cartId, cartItemId } = req.body;
+    let query = 'UPDATE cart_items SET quantity = (quantity - 1) WHERE id = $1 RETURNING quantity';
+    try {
+        const result = await pool.query(query, [cartItemId]);
+        if (result.rowCount > 0) {
+            console.log("Karttaki item sayısı başarıyla 1 düşürüldü");
+            const { newQuantity } = result.rows[0];
+            const countQuery = `SELECT SUM(quantity) as total FROM cart_items WHERE cart_id = $1`;
+            const countResult = await pool.query(countQuery, [cartId]);
+            const totalCount = countResult.rows[0].total;
+            res.json({
+                success: true,
+                message: "Ürün miktarı başarıyla artırıldı.",
+                newQuantity: newQuantity,
+                cartCount: totalCount
+            });
+        }
+        else{
+            console.log("Decrease işlemi yapılamadı. rowCount <= 0")
+        }
+    } catch (err) {
+        console.log("Item decrease sırasında hata oluştu:", err.message);
+    }
+}
+
+const increaseQuantityFromCart = async (req, res) => {
+    const { cartId, cartItemId } = req.body;
+    let query = 'UPDATE cart_items SET quantity = (quantity + 1) WHERE id = $1 RETURNING quantity';
+    try {
+        const result = await pool.query(query, [cartItemId]);
+        if (result.rowCount > 0) {
+            console.log("Karttaki item sayısı başarıyla 1 arttırıldı");
+            const { newQuantity } = result.rows[0];
+            const countQuery = `SELECT SUM(quantity) as total FROM cart_items WHERE cart_id = $1`;
+            const countResult = await pool.query(countQuery, [cartId]);
+            const totalCount = countResult.rows[0].total;
+            res.json({
+                success: true,
+                message: "Ürün miktarı başarıyla artırıldı.",
+                newQuantity: newQuantity,
+                cartCount: totalCount
+            });
+        }
+    } catch (err) {
+        console.log("Item increase sırasında hata oluştu:", err.message);
+    }
+}
+
 module.exports = {
     addItemToCart,
-    getCartPage
+    getCartPage,
+    decreaseQuantityFromCart,
+    increaseQuantityFromCart
 }

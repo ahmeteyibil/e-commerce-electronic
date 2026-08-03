@@ -1,6 +1,64 @@
 <div class="flex flex-col gap-y-4">
-    <h1>Sepetim</h1>
-    <div class="cart-items">
-        
+    <div class="cart-content">
+        <h1>Sepetim</h1>
+        <div class="cart-item-boxes">
+            <% cartItemsWithProduct.forEach(ciBoxData => { %>
+                <%- include('../cart-item-box', { ciBoxData: ciBoxData }) %>
+                    <% }); %>
+        </div>
     </div>
+    <div class="price-table"></div>
 </div>
+
+<script>
+    // Sayfadaki HERHANGİ bir tıklamayı dinliyoruz
+    document.addEventListener('click', async (e) => {
+
+        // Tıklanan öğe veya onun ebeveyni 'add-to-cart-btn' sınıfına sahip mi bakıyoruz
+        const btn = e.target.closest('.quantity-change-btn');
+        const quantityArea = e.target.closest('.quantity-area');
+        const valueElement = quantityArea.querySelector('.quantity-value');
+
+        // Eğer tıklanan şey sepete ekle butonuysa işlemi başlat
+        if (btn) {
+            try {
+                let reqUrl;
+                let response;
+                let reqParameter;
+                if (btn.classList.contains("increase-btn")) {
+                    reqUrl = '/cart/increase';
+                    const productId = btn.dataset.productId;
+                    reqParameter = productId;
+                }
+                else {
+                    reqUrl = '/cart/decrease';
+                    const cartItemId = btn.dataset.cartItemId;
+                    reqParameter = cartItemId;
+                }
+                response = await fetch(reqUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reqParameter })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    if (valueElement) {
+                        valueElement.innerText = data.newQuantity;
+                    }
+
+                    const cartCounter = document.getElementById('cart-count');
+                    if (cartCounter && data.cartCount !== undefined) {
+                        cartCounter.innerText = data.cartCount;
+                    }
+                }
+                else{
+                    console.log("Sepet ürünü miktarı değiştirme işlemi başarısız oldu");
+                }
+            } catch (err) {
+                console.error("Sepetten ürün azaltma hatası:", err);
+            }
+        }
+    });
+</script>
