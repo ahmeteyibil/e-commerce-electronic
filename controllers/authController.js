@@ -26,15 +26,24 @@ const postLoginPage = async (req, res) => {
             return res.status(400).send('E-posta veya şifre hatalı.');
         }
 
-        // 4. Giriş Başarılı: Kullanıcı oturumunu (session) başlatıyoruz
-        req.session.user = {
-            id: user.id,
-            name: user.name,
-            email: user.email
-        };
 
-        // Başarılı giriş sonrası ana sayfaya yönlendiriyoruz
-        res.redirect('/');
+
+        // 4. Giriş Başarılı: Kullanıcı oturumunu (session) başlatıyoruz
+        req.session.regenerate(function (err) {
+            if (err) return next(err);
+
+            // Eski SID yok edildi, yepyeni bir SID üretildi. 
+            // Artık güvenle kullanıcı bilgilerini oturuma yazabiliriz.
+            req.session.user = {
+                id: user.id,
+                name: user.name,
+                email: user.email
+            };
+            // Başarılı giriş sonrası ana sayfaya yönlendiriyoruz
+            req.session.save(() => res.redirect('/'))
+        });
+
+
 
     } catch (err) {
         console.error('Giriş hatası:', err.message);
@@ -70,7 +79,7 @@ const postRegisterPage = async (req, res) => {
         if (result.rowCount > 0) {
             setTimeout(() => {
                 res.redirect('/');
-            }, 3000); 
+            }, 3000);
         }
     }
     catch (err) {
@@ -78,15 +87,15 @@ const postRegisterPage = async (req, res) => {
         res.status(500).send('Sunucu Hatası');
     }
 }
-const getLogout = async (req,res) =>{
-    if(res.locals.user){
-        logOutUser(req,res);
+const getLogout = async (req, res) => {
+    if (res.locals.user) {
+        logOutUser(req, res);
     }
-    else{
+    else {
         res.redirect('/');
     }
 }
-const logOutUser = (req,res) => {
+const logOutUser = (req, res) => {
     req.session.destroy((err) => {
         if (err) {
             console.error("Çıkış yaparken hata oluştu:", err);

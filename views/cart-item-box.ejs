@@ -1,31 +1,29 @@
-<div
-    class="cart-item-box w-100 p-2 rounded-xl shadow-md border border-red-300 text-center flex justify-between items-center">
-    <div class="cart-item-visual border border-solid border-black">
+<div class="cart-item-box p-2 rounded-xl shadow-md border-2 border-red-300 text-center flex justify-between items-center w-240">
+    <div class="cart-item-visual border-solid border-black">
         <a href="#"><img src="<%= ciBoxData.product.image_url %>" alt="Example Product Image" class="w-20 h-20"></a>
     </div>
-    <div
-        class="cart-item-content flex flex-col justify-between items-start gap-y-1 text-left border border-solid border-black flex-1 px-2">
-        <h5 class="mb-2 hover:text-blue-700 font-bold transition-all duration-200"><a href="#">
+    <div class="cart-item-content flex flex-col justify-between items-start gap-y-1 text-left  border-solid border-black flex-1 px-2">
+        <h5 class="mb-2 hover:text-blue-700 font-bold transition-all duration-200 text-lg"><a href="#">
                 <%= ciBoxData.product.name %>
             </a>
         </h5>
         <h3>Stok Kodu: <%= ciBoxData.product.stock_code %>
         </h3>
-        <h3 class="italic">
+        <h3 class="italic text-lg font-bold">
             <%= ciBoxData.product.price %>₺
         </h3>
     </div>
-    <div class="quantity-area border border-solid border-black flex flex-col justify-center items-center gap-y-2">
+    <div class="quantity-area border border-solid border-black flex flex-col justify-center items-center gap-y-2 p-4 rounded-lg">
         <div>
-            <span class="quantity-value">
+            <span class="quantity-value font-bold text-xl">
                 <%= ciBoxData.cart_item.quantity %>
             </span>
         </div>
         <div class="change-quantity-area flex justify-between items-center gap-x-4">
             <button class="quantity-change-btn increase-btn w-8 h-8 bg-green-500 text-2xl text-white cursor-pointer transition-all duration-200 hover:bg-green-700"
-                data-cart-item-id="<%=  ciBoxData.cart_item.id %>">+</button>
+                data-cart-item-id="<%=  ciBoxData.cart_item.id %>" data-product-id="<%= ciBoxData.product.id %>">+</button>
             <button class="quantity-change-btn decrease-btn w-8 h-8 bg-red-500 text-2xl text-white cursor-pointer transition-all duration-200 hover:bg-red-700"
-                data-cart-item-id="<%=  ciBoxData.cart_item.id %>">-</button>
+                data-cart-item-id="<%=  ciBoxData.cart_item.id %>" data-product-id="<%= ciBoxData.product.id %>">-</button>
         </div>
     </div>
 </div>

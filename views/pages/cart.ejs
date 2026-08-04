@@ -1,8 +1,8 @@
-<div class="flex flex-col gap-y-4">
-    <div class="cart-content">
-        <h1>Sepetim</h1>
-        <div class="cart-item-boxes">
-            <% cartItemsWithProduct.forEach(ciBoxData => { %>
+<div class="flex flex-col gap-y-4 px-8 py-4">
+    <h1 class="text-4xl capitalize font-bold">Sepetim</h1>
+    <div class="cart-content flex flex-col gap-y-4">
+        <div class="cart-item-boxes flex flex-col gap-y-4 justify-center items-start">
+            <% cartItemsWithProduct.forEach(ciBoxData=> { %>
                 <%- include('../cart-item-box', { ciBoxData: ciBoxData }) %>
                     <% }); %>
         </div>
@@ -24,25 +24,28 @@
             try {
                 let reqUrl;
                 let response;
-                let reqParameter;
+                const cartItemId = btn.dataset.cartItemId;
                 if (btn.classList.contains("increase-btn")) {
                     reqUrl = '/cart/increase';
-                    const productId = btn.dataset.productId;
-                    reqParameter = productId;
+                    response = await fetch(reqUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ cartItemId })
+                    });
                 }
                 else {
                     reqUrl = '/cart/decrease';
-                    const cartItemId = btn.dataset.cartItemId;
-                    reqParameter = cartItemId;
+                    
+                    response = await fetch(reqUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ cartItemId })
+                    });
                 }
-                response = await fetch(reqUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ reqParameter })
-                });
+
 
                 const data = await response.json();
-
+                console.log("Increase/Decrease işlemi sonrası API'den dönen json değeri: ", data);
                 if (data.success) {
                     if (valueElement) {
                         valueElement.innerText = data.newQuantity;
@@ -53,7 +56,7 @@
                         cartCounter.innerText = data.cartCount;
                     }
                 }
-                else{
+                else {
                     console.log("Sepet ürünü miktarı değiştirme işlemi başarısız oldu");
                 }
             } catch (err) {

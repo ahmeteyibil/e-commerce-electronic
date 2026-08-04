@@ -105,24 +105,35 @@ const getCartPage = async (req, res) => {
 
 const decreaseQuantityFromCart = async (req, res) => {
     console.log("decreaseQuantityFromCart() worked.")
-    const { cartId, cartItemId } = req.body;
-    let query = 'UPDATE cart_items SET quantity = (quantity - 1) WHERE id = $1 RETURNING quantity';
+    const { cartItemId } = req.body;
+
+    // Mevcut quantity bilgisini al, eğer 0'dan büyükse devam et. Değilse çalıştırma.
+    const currentQuantityResult = await pool.query("SELECT quantity from cart_items WHERE id = $1", [cartItemId]);
+    const currentQuantity = currentQuantityResult.rows[0].quantity;
+    if (currentQuantity <= 0) {
+        console.log("Decrease işlemi yapılamaz. Mevcut miktar 0'dan küçük veya eşit.");
+        return;
+    }
+    let decreaseQuery = 'UPDATE cart_items SET quantity = ($1 - 1) WHERE id = $2 RETURNING quantity';
     try {
-        const result = await pool.query(query, [cartItemId]);
+        const result = await pool.query(decreaseQuery, [currentQuantity, cartItemId]);
         if (result.rowCount > 0) {
             console.log("Karttaki item sayısı başarıyla 1 düşürüldü");
-            const { newQuantity } = result.rows[0];
+            const newQuantity = result.rows[0].quantity;
+            const cartIdQuery = "SELECT cart_id from cart_items WHERE id = $1";
+            const cartIdResults = await pool.query(cartIdQuery, [cartItemId]);
+            const cartId = cartIdResults.rows[0].cart_id;
             const countQuery = `SELECT SUM(quantity) as total FROM cart_items WHERE cart_id = $1`;
             const countResult = await pool.query(countQuery, [cartId]);
             const totalCount = countResult.rows[0].total;
             res.json({
                 success: true,
-                message: "Ürün miktarı başarıyla artırıldı.",
+                message: "Ürün miktarı başarıyla azaltildi.",
                 newQuantity: newQuantity,
                 cartCount: totalCount
             });
         }
-        else{
+        else {
             console.log("Decrease işlemi yapılamadı. rowCount <= 0")
         }
     } catch (err) {
@@ -131,16 +142,26 @@ const decreaseQuantityFromCart = async (req, res) => {
 }
 
 const increaseQuantityFromCart = async (req, res) => {
-    const { cartId, cartItemId } = req.body;
-    let query = 'UPDATE cart_items SET quantity = (quantity + 1) WHERE id = $1 RETURNING quantity';
+    console.log("increaseQuantityFromCart() worked.")
+    const { cartItemId } = req.body;
+
+    // Şu anki quantity stok sayısına eşit veya büyük ise, fonksiyonu bitir. Arttırma yapma.
+
+    let increaseQuery = 'UPDATE cart_items SET quantity = (quantity + 1) WHERE id = $1 RETURNING quantity';
     try {
-        const result = await pool.query(query, [cartItemId]);
-        if (result.rowCount > 0) {
-            console.log("Karttaki item sayısı başarıyla 1 arttırıldı");
-            const { newQuantity } = result.rows[0];
+        const increaseResult = await pool.query(increaseQuery, [cartItemId]);
+        if (increaseResult.rowCount > 0) {
+            const newQuantity = increaseResult.rows[0].quantity;
+            
+            // Karttaki toplam item sayısını hesapla.
+            const cartIdQuery = "SELECT cart_id from cart_items WHERE id = $1";
+            const cartIdResults = await pool.query(cartIdQuery, [cartItemId]);
+            const cartId = cartIdResults.rows[0].cart_id;
+            console.log("Increase yapılan cartId: ", cartId);
             const countQuery = `SELECT SUM(quantity) as total FROM cart_items WHERE cart_id = $1`;
             const countResult = await pool.query(countQuery, [cartId]);
             const totalCount = countResult.rows[0].total;
+
             res.json({
                 success: true,
                 message: "Ürün miktarı başarıyla artırıldı.",
@@ -148,8 +169,11 @@ const increaseQuantityFromCart = async (req, res) => {
                 cartCount: totalCount
             });
         }
+        else {
+            console.log("Increase işlemi yapılamadı. rowCount <= 0")
+        }
     } catch (err) {
-        console.log("Item increase sırasında hata oluştu:", err.message);
+        console.log("Item Increase sırasında hata oluştu:", err.message);
     }
 }
 
