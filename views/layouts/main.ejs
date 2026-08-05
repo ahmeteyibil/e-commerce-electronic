@@ -22,7 +22,9 @@
                 <h1><a href="/products">Ürünler</a></h1>
             </nav>
             <div class="header-content flex gap-x-4 items-center">
-                <a href="cart">Sepetim (<span id="cart-count"><%= cartItemCount %></span>)</a>
+                <a href="cart">Sepetim (<span id="cart-count">
+                        <%= cartItemCount %>
+                    </span>)</a>
                 <% if(user) { %>
                     <div class="relative group">
                         <div
@@ -54,8 +56,10 @@
             </div>
         </div>
     </header>
-    <div class="border border-cyan-950">
-        <%- body %>
+    <div class="border border-cyan-950 flex justify-center items-center">
+        <div class="container w-3/4 h-full flex justify-between items-center">
+            <%- body %>
+        </div>
     </div>
 </body>
 

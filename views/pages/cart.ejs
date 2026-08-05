@@ -7,51 +7,123 @@
                     <% }); %>
         </div>
     </div>
-    <div class="price-table"></div>
+    <div class="price-table">
+
+    </div>
 </div>
 
 <script>
+    const cartItemBoxes = document.querySelector(".cart-item-boxes");
+    const cartCounter = document.getElementById('cart-count');
+
+    // Helper: set decrease button state and classes consistently
+    function setDecreaseState(decBtn, disabled) {
+        if (!decBtn) return;
+        decBtn.disabled = disabled;
+        decBtn.classList.toggle('cursor-pointer', !disabled);
+        decBtn.classList.toggle('bg-red-600', !disabled);
+        decBtn.classList.toggle('hover:bg-red-700', !disabled);
+        decBtn.classList.toggle('bg-red-900', disabled);
+        if (disabled) {
+            decBtn.setAttribute('aria-disabled', 'true');
+        } else {
+            decBtn.removeAttribute('aria-disabled');
+        }
+    }
+
+    function initQuantityButtons() {
+        document.querySelectorAll('.quantity-area').forEach(area => {
+            const valEl = area.querySelector('.quantity-value');
+            const decBtn = area.querySelector('.decrease-btn');
+            const quantity = valEl ? parseInt(valEl.textContent, 10) || 0 : 0;
+            setDecreaseState(decBtn, quantity <= 1);
+        });
+    }
+
+    initQuantityButtons();
+
     // Sayfadaki HERHANGİ bir tıklamayı dinliyoruz
-    document.addEventListener('click', async (e) => {
+    cartItemBoxes.addEventListener('click', async (e) => {
 
-        // Tıklanan öğe veya onun ebeveyni 'add-to-cart-btn' sınıfına sahip mi bakıyoruz
-        const btn = e.target.closest('.quantity-change-btn');
-        const quantityArea = e.target.closest('.quantity-area');
-        const valueElement = quantityArea.querySelector('.quantity-value');
+        const removeBtn = e.target.closest('.remove-item-btn');
+        if (removeBtn) {
+            try {
+                let reqUrl = 'cart/remove-item';
+                let response;
+                const cartItemId = removeBtn.dataset.cartItemId;
 
+                response = await fetch(reqUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cartItemId })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    if (cartCounter) {
+                        if (cartCounter && data.cartCount !== undefined) {
+                            console.log("api'den gelen cartCount bilgisi: ", data.cartCount);            
+                            cartCounter.innerText = data.cartCount;
+                        }
+                    }
+                    // DOM elementini sil.
+                    const cartItemBox = removeBtn.closest(".cart-item-box");;
+                    cartItemBox.remove();
+                }
+                else {
+                    console.log("Sepet item'i silinmesi başarısız oldu");
+                }
+            } catch (err) {
+                console.error("Sepetten ürün silme hatası:", err);
+            }
+        }
+
+        const quaChangeBtn = e.target.closest('.quantity-change-btn');
+        if (!quaChangeBtn) return;
+        if (quaChangeBtn.disabled) return;
+
+        const dinamicArea = quaChangeBtn ? quaChangeBtn.closest('.dinamic-area') : e.target.closest('.dinamic-area');
+        const quaValueElement = dinamicArea ? dinamicArea.querySelector('.quantity-value') : null;
+        const costValueElement = dinamicArea ? dinamicArea.querySelector('.cost-value') : null;
         // Eğer tıklanan şey sepete ekle butonuysa işlemi başlat
-        if (btn) {
+        if (quaChangeBtn) {
             try {
                 let reqUrl;
                 let response;
-                const cartItemId = btn.dataset.cartItemId;
-                if (btn.classList.contains("increase-btn")) {
+                let isDecrease = false;
+                const cartItemId = quaChangeBtn.dataset.cartItemId;
+                if (quaChangeBtn.classList.contains("increase-btn")) {
                     reqUrl = '/cart/increase';
-                    response = await fetch(reqUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ cartItemId })
-                    });
                 }
                 else {
                     reqUrl = '/cart/decrease';
-                    
-                    response = await fetch(reqUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ cartItemId })
-                    });
+                    isDecrease = true;
                 }
 
+                response = await fetch(reqUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cartItemId })
+                });
 
                 const data = await response.json();
+
                 console.log("Increase/Decrease işlemi sonrası API'den dönen json değeri: ", data);
                 if (data.success) {
-                    if (valueElement) {
-                        valueElement.innerText = data.newQuantity;
-                    }
 
-                    const cartCounter = document.getElementById('cart-count');
+                    const newQuantity = data.newQuantity;
+                    const decBtn = dinamicArea ? dinamicArea.querySelector('.decrease-btn') : null;
+                    // Use centralized helper to update decrease button state/classes
+                    setDecreaseState(decBtn, newQuantity <= 1);
+                    if (quaValueElement) {
+                        quaValueElement.textContent = data.newQuantity;
+                        console.log("api'den dönen itemCost değeri: ", data.itemCost);
+                        costValueElement.textContent = data.itemCost;
+                    }
+                    else {
+                        console.log("valueElement ögesi bulunamadığı için miktar bilgisi dinamik olarak güncellenemedi.")
+                    }
                     if (cartCounter && data.cartCount !== undefined) {
                         cartCounter.innerText = data.cartCount;
                     }
