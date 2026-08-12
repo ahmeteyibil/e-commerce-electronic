@@ -55,12 +55,16 @@ const addItemToCart = async (req, res) => {
         const countResult = await pool.query(countQuery, [cartId]);
         const totalCount = countResult.rows[0].total;
 
+        // const productQuery = "SELECT * as product from products WHERE id = $1";
+        // const productResults = await pool.query(productQuery, [productId]);
+        // const product = productResults.rows[0].product;
+
         // Frontend'e başarı durumunu ve yeni sepet sayısını JSON olarak dön
         res.json({
             success: true,
             message: "Ürün başarıyla eklendi.",
             cartCount: parseInt(totalCount, 10),
-            newQuantity: newQuantity
+            newQuantity: newQuantity,
         });
 
     } catch (err) {
@@ -70,7 +74,9 @@ const addItemToCart = async (req, res) => {
 };
 
 const getCartPage = async (req, res) => {
-    // Kart itemlerini al ve bir listeye at.
+    // 1. karttaki ürünleri alır.
+    // 2. kartın toplam maliyetini hesaplar.
+    
     const userId = req.session.user ? req.session.user.id : null;
     const guestToken = req.guestToken ? req.guestToken : null;
 
@@ -85,17 +91,26 @@ const getCartPage = async (req, res) => {
         parameters = [guestToken];
     }
     try {
+        let cartTotalCount;
+        let cartTotalCost;
         if (getCartIdQuery !== "") {
             const cartIdResults = await pool.query(getCartIdQuery, parameters);
             var cartItemsWithProduct;
+            if(cartIdResults.rowCount < 0){
+                cartItemsWithProduct = null;
+            }
             const { id } = cartIdResults.rows[0];
             console.log("İtemleri çekilecek olan sepetin id'si: ", id);
+            // Sepetteki itemleri çek
             let getItemsQuery = "SELECT row_to_json(ci) AS cart_item, row_to_json(p) AS product FROM cart_items ci JOIN products p ON ci.product_id = p.id WHERE ci.cart_id = $1";
-            const results = await pool.query(getItemsQuery, [id]);
-            cartItemsWithProduct = results.rows;
-
+            const itemResults = await pool.query(getItemsQuery, [id]);
+            cartItemsWithProduct = itemResults.rows;
+            // Sepetin toplam maliyetini ve sepetteki item sayısını çek.
+            const cartStatus = await getCartStatus(id);
+            cartTotalCount = cartStatus.cartTotalCount;
+            cartTotalCost = cartStatus.cartTotalCost;
         }
-        res.render("./pages/cart", { title: "Sepetim", cartItemsWithProduct: cartItemsWithProduct })
+        res.render("./pages/cart", { title: "Sepetim", cartItemsWithProduct: cartItemsWithProduct, totalCount: cartTotalCount, totalCost: cartTotalCost })
     } catch (er) {
         console.log("Sepet verileri çekilirken hata oluştu: ", er.message);
         res.status(500);

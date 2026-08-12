@@ -59,6 +59,12 @@ app.get('/', (req, res) => {
         title: 'Ana Sayfa'
     });
 });
+app.get('/profile', (req, res) => {
+    // views/index.ejs dosyasını render eder ve veri gönderir
+    res.render('pages/profile', {
+        title: 'Profilim'
+    });
+});
 app.use('/cart', cartRoutes)
 app.use('/', productRoutes); // Ana dizin altındaki tüm istekleri productRoutes yönetir
 app.use('/', authRoutes); // Ana dizin altındaki tüm istekleri productRoutes yönetir

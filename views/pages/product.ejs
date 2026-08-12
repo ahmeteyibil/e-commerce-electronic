@@ -1,0 +1,72 @@
+<div class="main-area w-[95%] h-full flex justify-between items-center py-4">
+    <div class="visual-area flex justify-between items-start gap-x-4 h-full">
+        <div id="little-images" class="flex flex-col gap-y-2 items-center justify-start flex-1">
+            <img src="" alt="little-image" class="w-24 h-24 border border-solid border-black">
+        </div>
+        <div id="current-image" class="w-120 h-120 border border-solid border-black rounded-xl">
+            <img src="<%= product.image_url %>" alt="" class="h-full w-full rounded-xl">
+        </div>
+    </div>
+    <div id="content-area" class="flex-1 flex flex-col gap-y-4 justify-start p-4 h-full">
+        <div>
+            <h1 class="font-bold text-2xl"><%= product.name %></h1>
+        </div>
+        <div>
+            <ul class="flex flex-col justify-start items-start gap-y-2">
+                <li>
+                    Stok Kodu: <span id="stock_code" class="font-bold"><%= product.stock_code %></span>
+                </li>
+                <li>
+                    Stok Durumu: <span id="stock_status" class="font-bold">Stokta var</span>
+                </li>
+                <li>
+                    Marka: <span id="brand" class="font-bold">Ex Brand</span>
+                </li>
+            </ul>
+        </div>
+        <div id="installment-options" class="flex justify-start items-center gap-x-4">
+            <div
+                class="installment-box flex flex-col gap-y-4 items-center justify-center border border-gray-200 border-solid rounded-lg p-2">
+                <img src="" alt="bank_image" id="bank-img">
+                <span id="bank-installment-month-value">
+                    4 Taksit
+                </span>
+            </div>
+            <div
+                class="installment-box flex flex-col gap-y-4 items-center justify-center border border-gray-200 border-solid rounded-lg p-2">
+                <img src="" alt="bank_image" id="bank-img">
+                <span id="bank-installment-month-value">
+                    4 Taksit
+                </span>
+            </div>
+            <div
+                class="installment-box flex flex-col gap-y-4 items-center justify-center border border-gray-200 border-solid rounded-lg p-2">
+                <img src="" alt="bank_image" id="bank-img">
+                <span id="bank-installment-month-value">
+                    4 Taksit
+                </span>
+            </div>
+            
+        </div>
+        <div id="payment-area" class="flex justify-between items-center py-2 px-8 max-h-20 border border-solid border-gray-300 rounded-xl shadow bg-[#DAFAFA]">
+                <div id="price-area" class="flex-1/2 flex justify-center items-center text-2xl font-bold">
+                    <span id="price-value" class=""><%= product.price %></span>₺
+                </div>
+                <div id="payment-area" class="flex-1/2 flex justify-center items-center gap-x-4">
+                    <div id="quantity-area" class="flex justify-center items-center border border-solid border-gray-400 rounded-lg ">
+                        <button id="increase-quantity-btn" class="cursor-pointer flex-1/3 flex justify-center items-center w-8 h-12 border-r border-solid border-gray-400">
+                            <i class="fa-solid fa-plus"></i></button>
+                        </button>
+                        <span id="quantity-value" class="flex-1/3 flex justify-center items-center w-8 h-12 border-r border-solid border-gray-400">
+                            1
+                        </span>
+                        <button id="decrease-quantity-btn" class="cursor-pointer flex-1/3 flex justify-center items-center w-8 h-12">
+                            <i class="fa-solid fa-minus"></i></button>
+                        </button>
+                    </div>
+                    <button id="add-to-cart-btn" class="py-2 px-4 font-bold border border-solid border-black cursor-pointer rounded-xl bg-blue-700 text-white">Sepete ekle</button>
+                    <button id="pay-fast-btn" class="py-2 px-4 font-bold border border-solid border-black cursor-pointer rounded-xl bg-green-600 text-white">Hemen al</button>
+                </div>
+            </div>
+    </div>
+</div>

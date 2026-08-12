@@ -1,21 +1,37 @@
-<div class="flex flex-col gap-y-4 px-8 py-4">
-    <h1 class="text-4xl capitalize font-bold">Sepetim</h1>
-    <div class="cart-content flex flex-col gap-y-4">
+<div class="flex flex-col gap-y-4">
+    <div class="cart-header">
+        <h1 class="text-4xl capitalize font-bold">Sepetim (<span class="total-count-value"><%= totalCount %></span>)</h1>
+    </div>
+    <div class="cart-content flex justify-between items-start w-full gap-x-4 min-h-120">
         <div class="cart-item-boxes flex flex-col gap-y-4 justify-center items-start">
-            <% cartItemsWithProduct.forEach(ciBoxData=> { %>
-                <%- include('../cart-item-box', { ciBoxData: ciBoxData }) %>
-                    <% }); %>
+            <% if(cartItemsWithProduct){ %>
+                <% cartItemsWithProduct.forEach(ciBoxData=> { %>
+                    <%- include('../partials/cart-item-box', { ciBoxData: ciBoxData }) %>
+                        <% }); %>
+                            <% } %>
+        </div>
+        <div
+            class="price-table border border-red-300 border-solid rounded-xl p-4 flex justify-center items-center flex-col gap-y-4">
+            <div>Toplam Fiyat:
+                <span class="font-extrabold text-lg">
+                    <span class="total-cost-value">
+                        <%= totalCost %>
+                    </span>₺
+                </span>
+            </div>
+            <button
+                class="submit-payment-btn px-4 py-2 rounded-lg bg-green-700 font-bold text-white outline-none hover:bg-green-900 transition-all duration-300 cursor-pointer">Ödeme
+                yap</button>
         </div>
     </div>
-    <div class="price-table">
 
-    </div>
 </div>
 
 <script>
     const cartItemBoxes = document.querySelector(".cart-item-boxes");
     const cartCounter = document.getElementById('cart-count');
-
+    const totalCountEl = document.querySelector(".total-count-value");
+    const totalCostEl = document.querySelector(".total-cost-value");
     // Helper: set decrease button state and classes consistently
     function setDecreaseState(decBtn, disabled) {
         if (!decBtn) return;
@@ -61,11 +77,15 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    if (cartCounter) {
-                        if (cartCounter && data.cartCount !== undefined) {
-                            console.log("api'den gelen cartCount bilgisi: ", data.cartCount);            
-                            cartCounter.innerText = data.cartCount;
-                        }
+                    if (cartCounter && data.cartCount !== undefined) {
+                        console.log("api'den gelen cartCount bilgisi: ", data.cartCount);
+                        cartCounter.innerText = data.cartCount;
+                    }
+                    if (totalCountEl && data.cartCount !== undefined) {
+                        totalCountEl.textContent = data.cartCount;
+                    }
+                    if (totalCostEl && data.cartCost !== undefined) {
+                        totalCostEl.textContent = data.cartCost;
                     }
                     // DOM elementini sil.
                     const cartItemBox = removeBtn.closest(".cart-item-box");;
@@ -126,6 +146,12 @@
                     }
                     if (cartCounter && data.cartCount !== undefined) {
                         cartCounter.innerText = data.cartCount;
+                    }
+                    if (totalCountEl && data.cartCount !== undefined) {
+                        totalCountEl.textContent = data.cartCount;
+                    }
+                    if (totalCostEl && data.cartCost !== undefined) {
+                        totalCostEl.textContent = data.cartCost;
                     }
                 }
                 else {

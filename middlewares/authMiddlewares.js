@@ -10,7 +10,7 @@ const trySetQuestToken = (req, res, next) => {
             maxAge: 1000 * 60 * 60 * 24 * 7, // 7 günlük token
             httpOnly: true
         });
-
+        console.log("Yeni guestToken ataması: ", guestToken);
         req.guestToken = guestToken;
     } else {
         req.guestToken = req.cookies.guest_token;

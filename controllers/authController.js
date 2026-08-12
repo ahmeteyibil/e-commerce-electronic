@@ -37,7 +37,8 @@ const postLoginPage = async (req, res) => {
             req.session.user = {
                 id: user.id,
                 name: user.name,
-                email: user.email
+                email: user.email,
+                createdAt: user.created_at
             };
             // Başarılı giriş sonrası ana sayfaya yönlendiriyoruz
             req.session.save(() => res.redirect('/'))
