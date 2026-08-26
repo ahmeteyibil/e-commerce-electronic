@@ -27,53 +27,40 @@
 
     <!-- Ortalanmış Pop-up Kutusu -->
     <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
-        <div
-            class="relative bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md sm:w-full sm:p-6 z-10">
-
-            <div class="text-center flex flex-col gap-y-4 items-center justify-center">
-                <!-- Başarı İkonu (Yeşil Tik) -->
-                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-200">
-                    <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
+        <div class="relative bg-white rounded-lg px-4 pt-5 pb-4 overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md sm:w-full sm:p-6 z-10 flex flex-col items-center justify-center gap-y-8 min-w-160">
+            <div id="cart-modal-header" class="flex justify-center items-center gap-x-6 text-green-600">
+                <div class="rounded-full p-2 text-2xl border border-solid border-black">
+                    <i class="fa-solid fa-check"></i>
                 </div>
-
-                <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                    Ürün Sepete Eklendi!
-                </h3>
-                <div class="added-product-box flex justify-start items-center gap-x-4 w-full p-2 border border-gray-300 border-solid rounded-xl">
-                    <div class="added-to-cart-pop-up-visual border border-solid border-gray-400 rounded-lg">
-                        <img src="" alt="product_image" class="" id="added-product-image">
+                <span class="text-2xl font-bold">
+                    Ürün sepete eklendi.
+                </span>
+            </div>
+            <div id="item-infos" class="flex justify-between items-center gap-x-4 w-full p-4 border-4 border-solid border-blue-500 rounded-xl">
+                        <div class="item-visual border border-solid border-gray-400 rounded-xl h-28 w-28">
+                    <img src="w-full h-full" alt="product-image" id="added-product-image" class="w-full h-full rounded-xl">
+                </div>
+                <div class="item-content flex-1 flex flex-col justify-start items-start">
+                    <div>
+                        <span id="added-product-name">
+                        </span>    
                     </div>
-                    <div class="added-to-cart-pop-up-content flex items-start justify-center flex-col gap-y-2">
-                        <span class="" id="added-product-name">
-                            Ürün ismi
+                    
+                    <div class="flex justify-start items-center text-xs">
+                        <span>Satıcı: </span>
+                        <span id="seller-name">
                         </span>
                     </div>
                 </div>
-                <div class="">
-                    <p class="text-sm text-gray-500">
-                        Ürün başarıyla sepetinize eklendi. Siparişinizi tamamlamak için sepete gidebilir veya alışverişe
-                        devam edebilirsiniz.
-                    </p>
+                <div id="buttons" class="flex flex-col gap-y-4 items-center justify-center">
+                    <button id="go-to-cart-btn" class="px-4 py-2 font-bold rounded-xl outline-none bg-blue-600  cursor-pointer text-white">
+                        <a href="/cart">Sepete git</a>
+                    </button>
+                    <button id="continue-shopping-btn" class="px-4 py-2 font-bold rounded-xl outline-none bg-orange-100 text-blue-600 cursor-pointer">
+                        Alışverişe devam et.
+                    </button>
                 </div>
             </div>
-
-            <!-- Butonlar -->
-            <div class="mt-5 sm:mt-6 sm:flex sm:flex-row-reverse space-y-2 sm:space-y-0">
-
-                <button
-                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm cursor-pointer">
-                    <a href="/cart">
-                        Sepete Git
-                    </a>
-                </button>
-                <button type="button" id="continue-shopping-btn"
-                    class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-indigo-600 font-medium text-white hover:bg-indigo-700 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm cursor-pointer ">
-                    Alışverişe Devam Et
-                </button>
-            </div>
-
         </div>
     </div>
 </div>

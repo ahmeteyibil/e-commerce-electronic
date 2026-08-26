@@ -12,6 +12,7 @@ const {trySetQuestToken} = require('./middlewares/authMiddlewares')
 const cartRoutes = require('./routes/cartRoutes')
 const productRoutes = require('./routes/productRoutes')
 const authRoutes = require('./routes/authRoutes')
+const categoryRoutes = require('./routes/categoryRoutes')
 const app = express();
 const PORT = 3000; // veya doğrudan 3000
 
@@ -68,7 +69,7 @@ app.get('/profile', (req, res) => {
 app.use('/cart', cartRoutes)
 app.use('/', productRoutes); // Ana dizin altındaki tüm istekleri productRoutes yönetir
 app.use('/', authRoutes); // Ana dizin altındaki tüm istekleri productRoutes yönetir
-
+app.use('/category', categoryRoutes);
 app.listen(3000, () => {
     console.log('Sunucu 3000 portunda çalışıyor: http://localhost:3000');
 });

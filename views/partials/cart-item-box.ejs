@@ -29,18 +29,20 @@
                 <button
                     class="quantity-change-btn increase-btn w-6 h-6 bg-green-600 text-md text-white cursor-pointer transition-all duration-200 hover:bg-green-700"
                     data-cart-item-id="<%= ciBoxData.cart_item.id %>" data-product-id="<%= ciBoxData.product.id %>"><i
-                        class="fa-solid fa-plus"></i></button>
+                        class="fa-solid fa-plus"></i>
+                    </button>
                 <button
                     class="quantity-change-btn decrease-btn w-6 h-6 bg-red-600 text-md text-white cursor-pointer transition-all duration-200 hover:bg-red-700"
                     data-cart-item-id="<%= ciBoxData.cart_item.id %>" data-product-id="<%= ciBoxData.product.id %>"><i
-                        class="fa-solid fa-minus"></i></button>
+                        class="fa-solid fa-minus"></i>
+                </button>
             </div>
         </div>
         <h3 class="italic text-lg font-bold">
             <span class="cost-value"><%= ciBoxData.product.price * ciBoxData.cart_item.quantity %></span>₺
         </h3>
     </div>
-    <button class="remove-item-btn absolute right-2 bottom-2 bg-red-400 cursor-pointer p-1 text-xs font-bold" data-cart-item-id="<%= ciBoxData.cart_item.id %>">
+    <button class="remove-item-btn absolute right-2 bottom-2 bg-red-600 cursor-pointer p-1 text-xs font-bold text-blac" data-cart-item-id="<%= ciBoxData.cart_item.id %>">
         <i class="fa-solid fa-trash"></i> Sil
     </button>
 </div>

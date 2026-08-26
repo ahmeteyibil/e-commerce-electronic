@@ -1,5 +1,5 @@
 <div class="flex flex-col gap-y-4 items-center justify-center my-8 relative">
-    <h1 class="text-4xl capitalize font-bold">Revaçtaki ürünler</h1>
+    <h1 class="text-4xl capitalize font-bold"><%= categoryName %></h1>
     <div class="products flex gap-x-4 items-center justify-center border border-black p-4">
         <% if (products.length> 0) { %>
             <% products.forEach(product=> {%>
@@ -9,7 +9,6 @@
     </div>
 
 </div>
-
 <script>
     function convertToInCartButton(btn) {
         btn.id = "in-cart-btn";

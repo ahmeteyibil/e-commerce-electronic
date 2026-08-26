@@ -1,20 +1,22 @@
-<div class="main-area w-[95%] h-full flex justify-between items-center py-4">
+<div id="main-area" class="w-[95%] h-full flex justify-between items-center py-4" data-product-id="<%= product.id %>">
     <div class="visual-area flex justify-between items-start gap-x-4 h-full">
         <div id="little-images" class="flex flex-col gap-y-2 items-center justify-start flex-1">
             <img src="" alt="little-image" class="w-24 h-24 border border-solid border-black">
         </div>
-        <div id="current-image" class="w-120 h-120 border border-solid border-black rounded-xl">
-            <img src="<%= product.image_url %>" alt="" class="h-full w-full rounded-xl">
+        <div  class="w-120 h-120 border border-solid border-black rounded-xl">
+            <img src="<%= product.image_url %>" alt="" id="current-image" class="h-full w-full rounded-xl">
         </div>
     </div>
     <div id="content-area" class="flex-1 flex flex-col gap-y-4 justify-start p-4 h-full">
         <div>
-            <h1 class="font-bold text-2xl"><%= product.name %></h1>
+            <h1 class="font-bold text-2xl"><span id="product-name"><%= product.name %></span></h1>
         </div>
         <div>
             <ul class="flex flex-col justify-start items-start gap-y-2">
                 <li>
-                    Stok Kodu: <span id="stock_code" class="font-bold"><%= product.stock_code %></span>
+                    Stok Kodu: <span id="stock_code" class="font-bold">
+                        <%= product.stock_code %>
+                    </span>
                 </li>
                 <li>
                     Stok Durumu: <span id="stock_status" class="font-bold">Stokta var</span>
@@ -46,27 +48,124 @@
                     4 Taksit
                 </span>
             </div>
-            
+
         </div>
-        <div id="payment-area" class="flex justify-between items-center py-2 px-8 max-h-20 border border-solid border-gray-300 rounded-xl shadow bg-[#DAFAFA]">
-                <div id="price-area" class="flex-1/2 flex justify-center items-center text-2xl font-bold">
-                    <span id="price-value" class=""><%= product.price %></span>₺
-                </div>
-                <div id="payment-area" class="flex-1/2 flex justify-center items-center gap-x-4">
-                    <div id="quantity-area" class="flex justify-center items-center border border-solid border-gray-400 rounded-lg ">
-                        <button id="increase-quantity-btn" class="cursor-pointer flex-1/3 flex justify-center items-center w-8 h-12 border-r border-solid border-gray-400">
-                            <i class="fa-solid fa-plus"></i></button>
-                        </button>
-                        <span id="quantity-value" class="flex-1/3 flex justify-center items-center w-8 h-12 border-r border-solid border-gray-400">
-                            1
-                        </span>
-                        <button id="decrease-quantity-btn" class="cursor-pointer flex-1/3 flex justify-center items-center w-8 h-12">
-                            <i class="fa-solid fa-minus"></i></button>
-                        </button>
-                    </div>
-                    <button id="add-to-cart-btn" class="py-2 px-4 font-bold border border-solid border-black cursor-pointer rounded-xl bg-blue-700 text-white">Sepete ekle</button>
-                    <button id="pay-fast-btn" class="py-2 px-4 font-bold border border-solid border-black cursor-pointer rounded-xl bg-green-600 text-white">Hemen al</button>
-                </div>
+        <div id="payment-area"
+            class="flex justify-between items-center py-2 px-8 max-h-20 border border-solid border-gray-300 rounded-xl shadow bg-[#DAFAFA]">
+            <div id="price-area" class="flex-1/2 flex justify-center items-center text-2xl font-bold">
+                <span id="price-value" class=""><%= product.price %></span>₺
             </div>
+            <div id="payment-area" class="flex-1/2 flex justify-center items-center gap-x-4">
+                <div id="quantity-area"
+                    class="flex justify-center items-center border border-solid border-gray-400 rounded-lg ">
+                    <button id="quantity-change-btn"
+                        class="increase-btn cursor-pointer bg-green-500 rounded-tl-md rounded-bl-md flex-1/3 flex justify-center items-center w-8 h-8 border-r border-solid border-gray-400">
+                        <i class="fa-solid fa-plus"></i></button>
+                    </button>
+                    <span id="quantity-value"
+                        class="flex-1/3 flex justify-center items-center w-8 h-8 border-r border-solid border-gray-400 font-bold">
+                        1
+                    </span>
+                    <button id="quantity-change-btn"
+                        class="decrease-btn cursor-pointer flex-1/3 bg-red-500 rounded-tr-md rounded-br-md flex justify-center items-center w-8 h-8">
+                        <i class="fa-solid fa-minus"></i></button>
+                    </button>
+                </div>
+                <button id="add-to-cart-btn" class="py-2 px-4 font-bold border border-solid border-black cursor-pointer rounded-xl bg-blue-700 text-white">Sepete
+                    ekle
+                </button>
+                <button id="pay-fast-btn" class="py-2 px-4 font-bold border border-solid border-black cursor-pointer rounded-xl bg-green-600 text-white">Hemen
+                    al
+                </button>
+            </div>
+        </div>
     </div>
 </div>
+<script>
+    function convertToInCartButton(btn){
+        btn.id = "in-cart-btn";
+        btn.classList.remove("bg-blue-700");
+        btn.classList.add("bg-green-700");
+        btn.textContent = "Sepette";
+    }
+    const quantityArea = document.getElementById("quantity-area");
+    const quantityValueEl = document.getElementById("quantity-value");
+    const addToCartBtn = document.getElementById("add-to-cart-btn");
+    const payFastBtn = document.getElementById("pay-fast-btn");
+    const mainArea = document.getElementById("main-area");
+
+    const productId = mainArea.dataset.productId;
+    const productName = document.getElementById("product-name").textContent; 
+    const productImg = document.getElementById("current-image").src; 
+    addToCartBtn.addEventListener("click", async () => {
+        if(addToCartBtn.id == "in-cart-btn"){
+            window.location.href = "/cart";
+            return;
+        }
+
+        const quantityStr = quantityValueEl.textContent;
+        let quantity = parseInt(quantityStr, 10);
+        
+        // Sepete ekle, cart-modal göster.
+        try{
+            const response = await fetch('/cart/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ productId: productId, quantity: quantity })
+            });
+            
+            const data = await response.json();
+            if(data.success){
+                // Cart Modal'ı görünür yap.
+                const currentlyOpen = !cartModal.classList.contains("hidden");
+                const openIt = !currentlyOpen;
+                toggleCartModal(openIt,productName,productImg);
+
+                // Butonun arka planı yeşil olur ve texti "sepette" olur. Buton id'si değişir ve tıklanıldığında 
+                // sepete yönlendirir.
+                convertToInCartButton(addToCartBtn);
+            }
+        }catch(er){
+            console.log("cart/add API'si gönderilirken hata oluştu");
+        }
+        
+
+    });
+    payFastBtn.addEventListener("click", async () => {
+        const quantityStr = quantityValueEl.textContent;
+        let quantity = parseInt(quantityStr, 10);
+        // Sepete ekle ve kullanıcıyı sepete yönlendir.
+        try{
+            const response = await fetch('/cart/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ productId: productId, quantity: quantity })
+            });
+            const data = await response.json();
+            if(data.success){
+                // Sepete git.
+                window.location.href = "/cart";
+            }
+        }catch(er){
+            console.log("cart/add API'si gönderilirken hata oluştu");
+        }
+        
+    });
+
+    quantityArea.addEventListener('click', (e) => {
+        const btn = e.target.closest('#quantity-change-btn');
+        if (btn) {
+            const quantityStr = quantityValueEl.textContent;
+            let quantity = parseInt(quantityStr, 10);
+            if (btn.classList.contains('increase-btn')) {
+                quantity++;
+                // quantity = Math.min(quantity, maxStock);
+            }
+            else if (btn.classList.contains('decrease-btn')) {
+                quantity--;
+                quantity = Math.max(quantity, 1);
+            }
+            quantityValueEl.textContent = quantity.toString();
+        }
+    });
+</script>

@@ -11,13 +11,12 @@
         <h3>Stok Kodu: <%= product.stock_code %>
         </h3>
         <h3 class="italic">
-            <span id="product-price">
+            <span id="product-price" class="font-bold text-lg">
                 <%= product.price %>₺
             </span>
         </h3>
     </div>
-    <button
-        class="add-to-cart-btn mt-2 add-to-bucket bg-blue-700 text-white px-4 py-2 text-md cursor-pointer rounded-lg transition-all duration-200 hover:bg-blue-900"
+    <button id="add-to-cart-btn" class="mt-2 add-to-bucket bg-blue-700 hover:bg-blue-900 text-white px-4 py-2 text-md cursor-pointer rounded-lg transition-all duration-200"
         data-product-id="<%= product.id %>">
         Sepete Ekle
     </button>

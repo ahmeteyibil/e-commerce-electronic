@@ -2,7 +2,7 @@ const pool = require('../db')
 
 const addItemToCart = async (req, res) => {
     try {
-        const { productId } = req.body;
+        const { productId, quantity } = req.body;
         const userId = req.session.user ? req.session.user.id : null;
         const guestToken = req.guestToken;
 
@@ -37,12 +37,12 @@ const addItemToCart = async (req, res) => {
         // ==========================================
         const upsertItemQuery = `
             INSERT INTO cart_items (cart_id, product_id, quantity) 
-            VALUES ($1, $2, 1)
+            VALUES ($1, $2, $3)
             ON CONFLICT (cart_id, product_id) 
-            DO UPDATE SET quantity = (cart_items.quantity + 1) RETURNING quantity;
+            DO UPDATE SET quantity = (cart_items.quantity + $3) RETURNING quantity;
         `;
         // Tek sorguda ürünü ekliyor, eğer zaten o sepette o ürün varsa sayısını 1 artırıyor.
-        const upsertResult = await pool.query(upsertItemQuery, [cartId, productId]);
+        const upsertResult = await pool.query(upsertItemQuery, [cartId, productId, quantity]);
         const { newQuantity } = upsertResult.rows[0];
         // ==========================================
         // 3. ADIM: GÜNCEL SEPET SAYISINI HESAPLA (Header için)
