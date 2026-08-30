@@ -1,6 +1,6 @@
-<div id="product-box" class="max-w-md p-2 bg-red-100 rounded-xl shadow-md border border-black-100 text-center flex flex-col">
+<div id="product-box" class="max-w-md p-4 bg-red-100 rounded-xl shadow-md border border-black-100 text-center flex flex-col">
     <div class="product-visual  ">
-        <a href="product/<%= product.id %>"><img src="<%= product.image_url %>" alt="Example Product Image" class="w-32 h-32" id="product-img"></a>
+        <a href="/product/<%= product.id %>"><img src="<%= product.image_url %>" alt="Example Product Image" class="w-32 h-32" id="product-img"></a>
     </div>
     <div class="product-content flex flex-col gap-y-1 text-left">
         <h5 class="mb-2 hover:text-blue-700 font-bold transition-all duration-200"><a href="product/<%= product.id %>">

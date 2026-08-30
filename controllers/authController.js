@@ -7,7 +7,7 @@ const getLoginPage = (req, res) => {
 }
 const postLoginPage = async (req, res) => {
     var { email, password } = req.body; // unpacking
-    email = email.trim()
+    email = email.trim();
     password = password.trim()
     try {
         const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
@@ -23,7 +23,11 @@ const postLoginPage = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password_hash);
 
         if (!isMatch) {
-            return res.status(400).send('E-posta veya şifre hatalı.');
+            
+            return res.status(400).json({
+                success: false,
+                message: "E-posta veya şifre hatalı."
+            });;
         }
 
 
@@ -41,7 +45,12 @@ const postLoginPage = async (req, res) => {
                 createdAt: user.created_at
             };
             // Başarılı giriş sonrası ana sayfaya yönlendiriyoruz
-            req.session.save(() => res.redirect('/'))
+            req.session.save(() => {
+                res.json({
+                    success: true,
+                    message: "Kullanıcı girişi başarılı."
+                });
+            });
         });
 
 

@@ -66,6 +66,7 @@ app.get('/profile', (req, res) => {
         title: 'Profilim'
     });
 });
+
 app.use('/cart', cartRoutes)
 app.use('/', productRoutes); // Ana dizin altındaki tüm istekleri productRoutes yönetir
 app.use('/', authRoutes); // Ana dizin altındaki tüm istekleri productRoutes yönetir
