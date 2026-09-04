@@ -1,11 +1,11 @@
 const pool = require('../db'); // Veritabanı bağlantısı
 const bcrypt = require('bcrypt'); // Şifre doğrulama için
-const { options } = require('../routes/productRoutes');
+const shopController = require("../controllers/shopController"); 
 
 const getLoginPage = (req, res) => {
     res.render("pages/login", { title: "Giriş Yap", layout: false })
 }
-const postLoginPage = async (req, res) => {
+const login = async (req, res) => {
     var { email, password } = req.body; // unpacking
     email = email.trim();
     password = password.trim()
@@ -14,7 +14,10 @@ const postLoginPage = async (req, res) => {
 
         // Kullanıcı veritabanında bulunamadıysa
         if (result.rows.length === 0) {
-            return res.status(400).send('E-posta veya şifre hatalı.');
+            return res.status(400).json({
+                success: false,
+                message: "Bu e-posta ile bir hesap kayıtlı değil."
+            });
         }
 
         const user = result.rows[0]; // Bulunan kullanıcı kaydı
@@ -23,14 +26,22 @@ const postLoginPage = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password_hash);
 
         if (!isMatch) {
-            
             return res.status(400).json({
                 success: false,
                 message: "E-posta veya şifre hatalı."
-            });;
+            });
         }
 
-
+        // Seller hesabı var mı? Kontrol et.
+        const shopDatas = shopController.getShopIDByUser(user.id);
+        const userSessionData = {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            createdAt: user.created_at,
+            shopId: shopDatas.shopId, 
+            shopName: shopDatas.shopName, 
+        }
 
         // 4. Giriş Başarılı: Kullanıcı oturumunu (session) başlatıyoruz
         req.session.regenerate(function (err) {
@@ -38,17 +49,12 @@ const postLoginPage = async (req, res) => {
 
             // Eski SID yok edildi, yepyeni bir SID üretildi. 
             // Artık güvenle kullanıcı bilgilerini oturuma yazabiliriz.
-            req.session.user = {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                createdAt: user.created_at
-            };
+            saveUserToSession(req, userSessionData);
             // Başarılı giriş sonrası ana sayfaya yönlendiriyoruz
             req.session.save(() => {
                 res.json({
                     success: true,
-                    message: "Kullanıcı girişi başarılı."
+                    message: "Kullanıcı girişi başarılı. Ana sayfaya yönlendiriliyorsunuz."
                 });
             });
         });
@@ -59,6 +65,15 @@ const postLoginPage = async (req, res) => {
         console.error('Giriş hatası:', err.message);
         res.status(500).send('Sunucu Hatası');
     }
+}
+
+const saveUserToSession = function (req, user) {
+    req.session.user = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        createdAt: user.created_at
+    };
 }
 
 const getRegisterPage = (req, res) => {
@@ -122,7 +137,7 @@ const logOutUser = (req, res) => {
 }
 module.exports = {
     getLoginPage,
-    postLoginPage,
+    postLoginPage: login,
     getRegisterPage,
     postRegisterPage,
     getLogout

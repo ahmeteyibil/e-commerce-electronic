@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
 const path = require('path');
@@ -13,8 +15,10 @@ const cartRoutes = require('./routes/cartRoutes')
 const productRoutes = require('./routes/productRoutes')
 const authRoutes = require('./routes/authRoutes')
 const categoryRoutes = require('./routes/categoryRoutes')
+const shopRoutes = require('./routes/shopRoutes');
 const app = express();
-const PORT = 3000; // veya doğrudan 3000
+
+const PORT = process.env.PORT; 
 
 
 // View Engine olarak EJS'yi seçiyoruz
@@ -66,11 +70,18 @@ app.get('/profile', (req, res) => {
         title: 'Profilim'
     });
 });
-
 app.use('/cart', cartRoutes)
-app.use('/', productRoutes); // Ana dizin altındaki tüm istekleri productRoutes yönetir
-app.use('/', authRoutes); // Ana dizin altındaki tüm istekleri productRoutes yönetir
+app.use('/', productRoutes); 
+app.use('/', authRoutes); 
 app.use('/category', categoryRoutes);
-app.listen(3000, () => {
-    console.log('Sunucu 3000 portunda çalışıyor: http://localhost:3000');
-});
+app.use('/', shopRoutes);
+
+// ✅ Vercel için export et
+module.exports = app;
+
+// ✅ Local'de çalıştırmak için (opsiyonel)
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server ${PORT} portunda çalışıyor`);
+  });
+}

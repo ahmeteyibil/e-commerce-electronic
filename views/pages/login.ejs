@@ -14,8 +14,9 @@
 
 <body
     class="relative w-full h-screen bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center">
-    <div id="state-box" class="absolute p-4 text-black shadow-lg font-bold top-full left-0 right-0">
-        <span id="state-text" class=""></span>
+    <div id="state-box"
+        class="absolute p-4 bg-green-600 text-black shadow-lg font-bold -top-14 left-0 right-0 w-3/4 mx-auto rounded-md transition-all ease-in-out duration-100">
+        <span id="state-text" class="">sadasd</span>
     </div>
     <div
         class="login-box bg-[#0B0521] text-white p-16 rounded-2xl border border-black border-solid flex flex-col gap-y-8 items-center justify-center">
@@ -51,6 +52,9 @@
 
     const pushStateBox = (success, message) => {
         stateBox.classList.remove("invisible");
+        stateBox.classList.remove("-top-14");
+        stateBox.classList.add("top-4");
+
         if (success) {
             stateBox.classList.remove("bg-red-600");
             stateBox.classList.add("bg-green-600");
@@ -62,12 +66,14 @@
         stateText.textContent = message;
         setTimeout(() => {
             stateBox.classList.add("invisible");
+            stateBox.classList.remove("top-4");
+            stateBox.classList.add("-top-14");
         }, 2000);
     }
 
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         const email = emailInput.value;
         const password = passwordInput.value;
 
@@ -82,7 +88,7 @@
             if (data.success) {
                 setTimeout(() => {
                     window.location.href = "/";
-                }, 2000);
+                }, 1000);
             }
         }
         catch (err) {

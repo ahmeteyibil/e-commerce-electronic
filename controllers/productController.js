@@ -1,7 +1,7 @@
 const pool = require('../db');
 
 // Ana sayfa ürünlerini getiren fonksiyon
-const getProductsPage = async (req, res) => {
+const getTrendsPage = async (req, res) => {
     try {
         // PostgreSQL'den ürünleri çekiyoruz
         const result = await pool.query('SELECT * FROM products ORDER BY id ASC');
@@ -45,6 +45,6 @@ const getProductById = async (productId) => {
     return product;
 }
 module.exports = {
-    getProductsPage,
+    getTrendsPage,
     getProductPage
 };
