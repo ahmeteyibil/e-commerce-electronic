@@ -1,5 +1,5 @@
-const { Pool } = require('pg');
 require('dotenv').config()
+const { Pool } = require('pg');
 
 // Kendi PostgreSQL kullanıcı adı, şifre ve veritabanı adınla burayı güncelle
 // const pool = new Pool({

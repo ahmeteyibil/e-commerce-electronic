@@ -7,12 +7,15 @@ const addShopInfosIntoUserSession = (req, shopId, shopName) => {
     req.session.user.shopName = shopName;
 };
 
-const saveUserToSession = function (req, user) {
+const saveUserToSession = function (req, userData) {
     req.session.user = {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        createdAt: user.created_at
+        id: userData.id,
+        name: userData.name,
+        email: userData.email,
+        role: userData.role,
+        createdAt: userData.createdAt,
+        shopId: userData.shopId,
+        shopName: userData.shopName
     };
 }
 

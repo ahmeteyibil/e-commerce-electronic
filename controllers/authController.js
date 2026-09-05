@@ -1,7 +1,7 @@
 const pool = require('../db'); // Veritabanı bağlantısı
 const bcrypt = require('bcrypt'); // Şifre doğrulama için
 const { getShopByUserId } = require('../services/shopService');
-const { addShopInfosIntoUserSession , saveUserToSession} = require('../utils/sessionUser');
+const { addShopInfosIntoUserSession, saveUserToSession } = require('../utils/sessionUser');
 
 const getLoginPage = (req, res) => {
     res.render("pages/login", { title: "Giriş Yap", layout: false })
@@ -33,7 +33,7 @@ const login = async (req, res) => {
             });
         }
 
-        
+
         const userSessionData = {
             id: user.id,
             name: user.name,
@@ -46,7 +46,7 @@ const login = async (req, res) => {
         const shopDatas = await getShopByUserId(user.id);
 
         // Eğer varsa, session bilgilerine onu da ekle.
-        if(shopDatas){
+        if (shopDatas) {
             userSessionData.role = "seller";
             userSessionData.shopId = shopDatas.shopId;
             userSessionData.shopName = shopDatas.shopName;
@@ -89,15 +89,19 @@ const register = async (req, res) => {
     password = password.trim();
     password_again = password_again.trim();
     if (password != password_again) {
-        res.send("şifreler eşleşmiyor.")
-        return;
+        return res.json({
+            success: false,
+            message: "Şifreler eşleşmiyor."
+        });
     }
     // Bu email'e kayıtlı bir hesap var mı? 
     const emailExistQuery = "SELECT * FROM users WHERE email = $1"
     const emailResult = await pool.query(emailExistQuery, [email]);
     if (emailResult != undefined && emailResult.rowCount > 0) {
-        res.send("Bu email ile bir kayıtlı hesap zaten var.")
-        return;
+        return res.json({
+            success: false,
+            message: "Bu email ile bir kayıtlı hesap zaten var."
+        });
     }
     const dateOfNow = new Date();
     try {
@@ -105,14 +109,18 @@ const register = async (req, res) => {
         let registerQueryStr = "INSERT into users (name, email, password_hash, created_at) VALUES ($1,$2,$3,$4)";
         const result = await pool.query(registerQueryStr, [name, email, password_h, dateOfNow]);
         if (result.rowCount > 0) {
-            setTimeout(() => {
-                res.redirect('/');
-            }, 3000);
+            return res.json({
+                success: true,
+                message: "Hesap başarıyla oluşturuldu."
+            });
         }
     }
     catch (err) {
         console.error('Kayıt hatası:', err.message);
-        res.status(500).send('Sunucu Hatası');
+        res.status(500).json({
+            success: false,
+            message: 'Sunucu Hatası'
+        });
     }
 }
 const getLogout = async (req, res) => {

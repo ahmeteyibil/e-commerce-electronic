@@ -1,25 +1,46 @@
-<div id="product-box" class="max-w-md p-4 bg-red-100 rounded-xl shadow-md border border-black-100 text-center flex flex-col">
-    <div class="product-visual  ">
-        <a href="/product/<%= product.id %>"><img src="<%= product.image_url %>" alt="Example Product Image" class="w-32 h-32" id="product-img"></a>
+<!-- Ürün Kartı Kapsayıcısı -->
+<div id="product-box" class="w-54 group bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 overflow-hidden transition-all duration-300 flex flex-col h-full">
+    
+    <!-- Ürün Görseli Alanı -->
+    <div class="relative overflow-hidden aspect-square bg-gray-50 flex items-center justify-center p-4">
+        <a href="/product/<%= product.id %>" class="block w-full h-full">
+            <img src="<%= product.image_url %>" alt="<%= product.name %>" 
+                 class="w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-500" 
+                 id="product-img">
+        </a>
     </div>
-    <div class="product-content flex flex-col gap-y-1 text-left">
-        <h5 class="mb-2 hover:text-blue-700 font-bold transition-all duration-200">
-            <a href="/product/<%= product.id %>">
-                <span id="product-name">
-                    <%= product.name %>
-                </span>
+
+    <!-- Ürün İçeriği -->
+    <div class="p-5 flex flex-col grow text-left">
+        <!-- Stok Kodu (Daha kibar ve soluk) -->
+        <span class="text-xs font-semibold text-gray-400 mb-1 tracking-wider uppercase">
+            Stok: <%= product.stock_code %>
+        </span>
+        
+        <!-- Ürün Adı -->
+        <h5 class="text-lg font-bold text-gray-800 leading-tight mb-2 flex-grow">
+            <a href="/product/<%= product.id %>" class="hover:text-indigo-600 transition-colors duration-200">
+                <span id="product-name"><%= product.name %></span>
             </a>
         </h5>
-        <h3>Stok Kodu: <%= product.stock_code %>
-        </h3>
-        <h3 class="italic">
-            <span id="product-price" class="font-bold text-lg">
-                <%= product.price %>₺
+        
+        <!-- Fiyat -->
+        <div class="mt-auto pt-3">
+            <span id="product-price" class="font-bold text-2xl text-gray-900">
+                <%= product.price %> ₺
             </span>
-        </h3>
+        </div>
     </div>
-    <button id="add-to-cart-btn" class="mt-2 add-to-bucket bg-blue-700 hover:bg-blue-900 text-white px-4 py-2 text-md cursor-pointer rounded-lg transition-all duration-200"
-        data-product-id="<%= product.id %>">
-        Sepete Ekle
-    </button>
+
+    <!-- Sepete Ekle Butonu -->
+    <div class="px-5 pb-5 mt-auto">
+        <button id="add-to-cart-btn" data-product-id="<%= product.id %>"
+                class="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2.5 rounded-xl transition-colors duration-200 shadow-sm shadow-indigo-100 cursor-pointer">
+            <!-- Sepet İkonu (SVG) -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            Sepete Ekle
+        </button>
+    </div>
 </div>

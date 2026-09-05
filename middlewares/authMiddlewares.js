@@ -1,6 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 
 const trySetQuestToken = (req, res, next) => {
+
     // Eğer kullanıcının tarayıcısında guest_token çerezi yoksa oluşturalım
     if (!req.cookies.guest_token && !req.session.user) {
         const guestToken = uuidv4();

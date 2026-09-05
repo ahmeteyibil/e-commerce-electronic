@@ -1,42 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ahmet Elektronik | <%= title %></title>
+    <title>Ahmet Elektronik | <%= title %>
+    </title>
     <link rel="stylesheet" href="/css/output.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.0/css/all.min.css" integrity="sha512-ApSLB1Pd3/bZN8fWB/RG9YhN/7bd9Hkf3AGaE2mPfebjrxagjuBtx2GcgdqIlJkUzwylBo61r9Xa9NmgBI0swA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.0/css/all.min.css"
+        integrity="sha512-ApSLB1Pd3/bZN8fWB/RG9YhN/7bd9Hkf3AGaE2mPfebjrxagjuBtx2GcgdqIlJkUzwylBo61r9Xa9NmgBI0swA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/icon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/icon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/icon/favicon-16x16.png">
+    <link rel="manifest" href="/images/icon/site.webmanifest">
 </head>
-<body class="reltaive w-full h-screen bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center">
+
+<body
+    class="reltaive w-full h-screen bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center">
     <div id="state-box"
         class="absolute p-4 bg-green-600 text-black shadow-lg font-bold -top-14 left-0 right-0 w-3/4 mx-auto rounded-md transition-all ease-in-out duration-100">
         <span id="state-text" class="">sadasd</span>
     </div>
-    <div class="login-box bg-[#0B0521] text-white p-16 rounded-2xl border border-black border-solid flex flex-col gap-y-8 items-center justify-center">
+    <div
+        class="login-box bg-[#0B0521] text-white p-16 rounded-2xl border border-black border-solid flex flex-col gap-y-8 items-center justify-center">
         <h1 class="text-3xl font-bold">Register</h1>
         <form id="register-form" class="flex flex-col gap-y-4">
-            <div class="input-box flex items-center justify-between h-12 px-4 gap-x-2 border border-solid border-white rounded-lg">
+            <div
+                class="input-box flex items-center justify-between h-12 px-4 gap-x-2 border border-solid border-white rounded-lg">
                 <i class="fa-solid fa-address-card"></i>
                 <input class="flex-1 h-full outline-none" id="name" type="text" name="name" placeholder="Name">
             </div>
-            <div class="input-box flex items-center justify-between h-12 px-4 gap-x-2 border border-solid border-white rounded-lg">
+            <div
+                class="input-box flex items-center justify-between h-12 px-4 gap-x-2 border border-solid border-white rounded-lg">
                 <i class="fa-solid fa-envelope"></i>
                 <input class="flex-1 h-full outline-none" id="email" type="text" name="email" placeholder="Email">
             </div>
-            <div class="input-box flex items-center justify-between h-12 px-4 gap-x-2 border border-solid border-white rounded-lg">
+            <div
+                class="input-box flex items-center justify-between h-12 px-4 gap-x-2 border border-solid border-white rounded-lg">
                 <i class="fa-solid fa-key"></i>
-                <input class="flex-1 h-full outline-none" id="pw" type="password" name="password" placeholder="Password">
+                <input class="flex-1 h-full outline-none" id="pw" type="password" name="password"
+                    placeholder="Password">
             </div>
-            <div class="input-box flex items-center justify-between h-12 px-4 gap-x-2 border border-solid border-white rounded-lg">
+            <div
+                class="input-box flex items-center justify-between h-12 px-4 gap-x-2 border border-solid border-white rounded-lg">
                 <i class="fa-solid fa-key"></i>
-                <input class="flex-1 h-full outline-none" id="pw_again" type="password" name="password_again" placeholder="Password again">
+                <input class="flex-1 h-full outline-none" id="pw-again" type="password" name="password_again"
+                    placeholder="Password again">
             </div>
-            <button class="submit-button px-4 py-2 rounded-lg border border-solid border-black bg-blue-700 transition-all duration-300 hover:bg-blue-900 cursor-pointer" type="submit">Kayıt ol</button>
+            <button
+                class="submit-button px-4 py-2 rounded-lg border border-solid border-black bg-blue-700 transition-all duration-300 hover:bg-blue-900 cursor-pointer"
+                type="submit">Kayıt ol</button>
         </form>
         <span>Zaten bir hesabın var mı? <a class="font-bold" href="login">Giriş Yap</a></span>
         <a href="/">Ana sayfaya dön</a>
     </div>
 </body>
+
 </html>
 <script>
     const registerForm = document.getElementById("register-form");
