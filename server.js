@@ -21,8 +21,10 @@ const app = express();
 const PORT = process.env.PORT; 
 
 
+app.set('views', path.join(__dirname, 'views'));
 // View Engine olarak EJS'yi seçiyoruz
 app.set('view engine', 'ejs');
+app.set('layout', 'layouts/main'); 
 
 // Statik dosyaların (CSS, resimler vb.) yeri
 app.use(express.static(path.join(__dirname, 'public')));
