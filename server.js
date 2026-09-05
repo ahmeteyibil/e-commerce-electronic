@@ -9,7 +9,7 @@ const pg = require('pg')
 
 const cookieParser = require('cookie-parser')
 const {getCartItemCount} = require('./middlewares/cartMiddlewares')
-const {trySetQuestToken} = require('./middlewares/authMiddlewares')
+const {trySetQuestToken, requireAuth} = require('./middlewares/authMiddlewares')
 
 const cartRoutes = require('./routes/cartRoutes')
 const productRoutes = require('./routes/productRoutes')
@@ -66,7 +66,7 @@ app.get('/', (req, res) => {
         title: 'Ana Sayfa'
     });
 });
-app.get('/profile', (req, res) => {
+app.get('/profile', requireAuth, (req, res) => {
     // views/index.ejs dosyasını render eder ve veri gönderir
     res.render('pages/profile', {
         title: 'Profilim'

@@ -1,5 +1,13 @@
 const uuidModule = import('uuid');
 
+const requireAuth = (req, res, next) => {
+    if (!req.session.user) {
+        return res.redirect('/login');
+    }
+
+    next();
+};
+
 const trySetQuestToken = async (req, res, next) => {
     try {
         const { v4: uuidv4 } = await uuidModule;
@@ -25,5 +33,6 @@ const trySetQuestToken = async (req, res, next) => {
 }
 
 module.exports = {
-    trySetQuestToken
+    trySetQuestToken,
+    requireAuth
 }
