@@ -7,25 +7,29 @@
     <link rel="stylesheet" href="/css/output.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.0/css/all.min.css" integrity="sha512-ApSLB1Pd3/bZN8fWB/RG9YhN/7bd9Hkf3AGaE2mPfebjrxagjuBtx2GcgdqIlJkUzwylBo61r9Xa9NmgBI0swA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
-<body class="w-full h-screen bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center">
+<body class="reltaive w-full h-screen bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center">
+    <div id="state-box"
+        class="absolute p-4 bg-green-600 text-black shadow-lg font-bold -top-14 left-0 right-0 w-3/4 mx-auto rounded-md transition-all ease-in-out duration-100">
+        <span id="state-text" class="">sadasd</span>
+    </div>
     <div class="login-box bg-[#0B0521] text-white p-16 rounded-2xl border border-black border-solid flex flex-col gap-y-8 items-center justify-center">
         <h1 class="text-3xl font-bold">Register</h1>
-        <form action="register" method="post" class="flex flex-col gap-y-4">
+        <form id="register-form" class="flex flex-col gap-y-4">
             <div class="input-box flex items-center justify-between h-12 px-4 gap-x-2 border border-solid border-white rounded-lg">
                 <i class="fa-solid fa-address-card"></i>
-                <input class="flex-1 h-full outline-none" type="text" name="name" placeholder="Name">
+                <input class="flex-1 h-full outline-none" id="name" type="text" name="name" placeholder="Name">
             </div>
             <div class="input-box flex items-center justify-between h-12 px-4 gap-x-2 border border-solid border-white rounded-lg">
                 <i class="fa-solid fa-envelope"></i>
-                <input class="flex-1 h-full outline-none" type="text" name="email" placeholder="Email">
+                <input class="flex-1 h-full outline-none" id="email" type="text" name="email" placeholder="Email">
             </div>
             <div class="input-box flex items-center justify-between h-12 px-4 gap-x-2 border border-solid border-white rounded-lg">
                 <i class="fa-solid fa-key"></i>
-                <input class="flex-1 h-full outline-none" type="password" name="password" placeholder="Password">
+                <input class="flex-1 h-full outline-none" id="pw" type="password" name="password" placeholder="Password">
             </div>
             <div class="input-box flex items-center justify-between h-12 px-4 gap-x-2 border border-solid border-white rounded-lg">
                 <i class="fa-solid fa-key"></i>
-                <input class="flex-1 h-full outline-none" type="password" name="password_again" placeholder="Password again">
+                <input class="flex-1 h-full outline-none" id="pw_again" type="password" name="password_again" placeholder="Password again">
             </div>
             <button class="submit-button px-4 py-2 rounded-lg border border-solid border-black bg-blue-700 transition-all duration-300 hover:bg-blue-900 cursor-pointer" type="submit">Kayıt ol</button>
         </form>
@@ -34,3 +38,60 @@
     </div>
 </body>
 </html>
+<script>
+    const registerForm = document.getElementById("register-form");
+    const stateBox = document.getElementById("state-box");
+    const stateText = stateBox?.querySelector("#state-text")
+    const nameInput = document.getElementById("name");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("pw");
+    const passwordAgainInput = document.getElementById("pw-again");
+
+    const pushStateBox = (success, message) => {
+        stateBox.classList.remove("invisible");
+        stateBox.classList.remove("-top-14");
+        stateBox.classList.add("top-4");
+
+        if (success) {
+            stateBox.classList.remove("bg-red-600");
+            stateBox.classList.add("bg-green-600");
+        }
+        else {
+            stateBox.classList.remove("bg-green-600");
+            stateBox.classList.add("bg-red-600");
+        }
+        stateText.textContent = message;
+        setTimeout(() => {
+            stateBox.classList.add("invisible");
+            stateBox.classList.remove("top-4");
+            stateBox.classList.add("-top-14");
+        }, 2000);
+    }
+
+    registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const name = nameInput.value;
+        const email = emailInput.value;
+        const pw = passwordInput.value;
+        const pwAgain = passwordAgainInput.value;
+
+        try {
+            const response = await fetch('/register', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: name, email: email, password: pw, password_again: pwAgain })
+            });
+            const data = await response.json();
+            pushStateBox(data.success, data.message);
+            if (data.success) {
+                setTimeout(() => {
+                    window.location.href = "/";
+                }, 1000);
+            }
+        }
+        catch (err) {
+            console.log("Register POST isteği atılırken hata oluştu: ", err.message);
+        }
+    });
+</script>

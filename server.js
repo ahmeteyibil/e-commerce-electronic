@@ -76,10 +76,8 @@ app.use('/', authRoutes);
 app.use('/category', categoryRoutes);
 app.use('/', shopRoutes);
 
-// ✅ Vercel için export et
 module.exports = app;
 
-// ✅ Local'de çalıştırmak için (opsiyonel)
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`Server ${PORT} portunda çalışıyor`);

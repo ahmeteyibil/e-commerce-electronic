@@ -15,13 +15,13 @@
 <body
     class="relative w-full h-screen bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center">
     <div id="state-box"
-        class="absolute p-4 bg-green-600 text-black shadow-lg font-bold -top-14 left-0 right-0 w-3/4 mx-auto rounded-md transition-all ease-in-out duration-100">
+        class="absolute p-4 bg-blue-600 text-black shadow-lg font-bold -top-14 left-0 right-0 w-3/4 mx-auto rounded-md transition-all ease-in-out duration-100">
         <span id="state-text" class="">sadasd</span>
     </div>
     <div
         class="login-box bg-[#0B0521] text-white p-16 rounded-2xl border border-black border-solid flex flex-col gap-y-8 items-center justify-center">
         <h1 class="text-3xl font-bold">Satıcı hesabı oluştur</h1>
-        <form action="/become-a-seller" method="post" class="flex flex-col gap-y-4">
+        <form class="flex flex-col gap-y-4">
             <div
                 class="input-box flex items-center justify-between h-12 px-4 gap-x-2 border border-solid border-white rounded-lg">
                 <i class="fa-solid fa-address-card"></i>
@@ -42,7 +42,8 @@
             </div>
             <button
                 class="submit-button px-4 py-2 rounded-lg border border-solid border-black bg-blue-700 transition-all duration-300 hover:bg-blue-900 cursor-pointer"
-                type="submit">Hesabı oluştur</button>
+                type="submit">Hesabı oluştur
+            </button>
         </form>
         <a href="/">Ana sayfaya dön</a>
     </div>
@@ -51,6 +52,7 @@
 </html>
 <script>
     const stateBox = document.getElementById("state-box");
+    const stateText = document.getElementById("state-text");
 
     const pushStateBox = (success, message) => {
         stateBox.classList.remove("invisible");
@@ -78,11 +80,12 @@
 
     const submitButton = document.querySelector(".submit-button");
     submitButton.addEventListener('click', async (e) => {
+        e.preventDefault();
         try {
             const shopName = shopNameInput?.value.trim();
             const slug = slugInput?.value.trim();
             const iban = ibanInput?.value.trim();
-            
+
             console.log(`Input'lardan çekilen bilgiler:\nShop Name: ${shopName},\nShop Slug: ${slug},\nShop IBAN: ${iban},`);
             const response = await fetch('/become-a-seller', {
                 method: "POST",

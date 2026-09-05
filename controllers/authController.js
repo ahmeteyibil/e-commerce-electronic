@@ -1,6 +1,7 @@
 const pool = require('../db'); // Veritabanı bağlantısı
 const bcrypt = require('bcrypt'); // Şifre doğrulama için
-const shopController = require("../controllers/shopController"); 
+const { getShopByUserId } = require('../services/shopService');
+const { addShopInfosIntoUserSession , saveUserToSession} = require('../utils/sessionUser');
 
 const getLoginPage = (req, res) => {
     res.render("pages/login", { title: "Giriş Yap", layout: false })
@@ -32,24 +33,36 @@ const login = async (req, res) => {
             });
         }
 
-        // Seller hesabı var mı? Kontrol et.
-        const shopDatas = shopController.getShopIDByUser(user.id);
+        
         const userSessionData = {
             id: user.id,
             name: user.name,
             email: user.email,
-            createdAt: user.created_at,
-            shopId: shopDatas.shopId, 
-            shopName: shopDatas.shopName, 
+            role: "customer",
+            createdAt: user.created_at
         }
 
-        // 4. Giriş Başarılı: Kullanıcı oturumunu (session) başlatıyoruz
+        // Seller hesabı var mı? Kontrol et.
+        const shopDatas = await getShopByUserId(user.id);
+
+        // Eğer varsa, session bilgilerine onu da ekle.
+        if(shopDatas){
+            userSessionData.role = "seller";
+            userSessionData.shopId = shopDatas.shopId;
+            userSessionData.shopName = shopDatas.shopName;
+        }
         req.session.regenerate(function (err) {
-            if (err) return next(err);
+            if (err) return res.status(500).json({
+                success: false,
+                message: "Oturum oluşturulamadı."
+            });
 
             // Eski SID yok edildi, yepyeni bir SID üretildi. 
             // Artık güvenle kullanıcı bilgilerini oturuma yazabiliriz.
             saveUserToSession(req, userSessionData);
+            if (shopDatas) {
+                addShopInfosIntoUserSession(req, shopDatas.shopId, shopDatas.shopName);
+            }
             // Başarılı giriş sonrası ana sayfaya yönlendiriyoruz
             req.session.save(() => {
                 res.json({
@@ -58,28 +71,18 @@ const login = async (req, res) => {
                 });
             });
         });
-
-
-
     } catch (err) {
         console.error('Giriş hatası:', err.message);
         res.status(500).send('Sunucu Hatası');
     }
 }
 
-const saveUserToSession = function (req, user) {
-    req.session.user = {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        createdAt: user.created_at
-    };
-}
+
 
 const getRegisterPage = (req, res) => {
     res.render("pages/register", { title: "Kayıt Ol", layout: false })
 }
-const postRegisterPage = async (req, res) => {
+const register = async (req, res) => {
     var { name, email, password, password_again } = req.body; // unpacking
     name = name.trim();
     email = email.trim();
@@ -139,6 +142,6 @@ module.exports = {
     getLoginPage,
     postLoginPage: login,
     getRegisterPage,
-    postRegisterPage,
-    getLogout
+    postRegisterPage: register,
+    getLogout,
 }

@@ -3,11 +3,13 @@
         <a href="/product/<%= product.id %>"><img src="<%= product.image_url %>" alt="Example Product Image" class="w-32 h-32" id="product-img"></a>
     </div>
     <div class="product-content flex flex-col gap-y-1 text-left">
-        <h5 class="mb-2 hover:text-blue-700 font-bold transition-all duration-200"><a href="product/<%= product.id %>">
+        <h5 class="mb-2 hover:text-blue-700 font-bold transition-all duration-200">
+            <a href="/product/<%= product.id %>">
                 <span id="product-name">
                     <%= product.name %>
                 </span>
-            </a></h5>
+            </a>
+        </h5>
         <h3>Stok Kodu: <%= product.stock_code %>
         </h3>
         <h3 class="italic">
