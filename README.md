@@ -69,9 +69,9 @@ Projenin canlı versiyonuna aşağıdaki linkten erişebilirsiniz:
 
 🔗 **Live Demo:** [Simmar.vercel.app](https://e-commerce-electronic.vercel.app) 
 
-*Demo kullanıcı bilgileri:* (İstersen ekle)
-- Email: `demo@user.com`
-- Şifre: `demouser`
+*Demo kullanıcı bilgileri:*
+- Email: `yeni@gmail.com`
+- Şifre: `yeni`
 
 <br>
 
