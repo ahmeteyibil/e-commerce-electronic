@@ -1,7 +1,7 @@
 <h1 align="center">
-  <br>
+  <!-- <br>
   <img src="https://via.placeholder.com/150x150/2563EB/FFFFFF?text=Simmar" alt="Simmar Logo" width="150">
-  <br>
+  <br> -->
   Simmar
   <br>
   <sub><sup>Simple Marketplace</sup></sub>
@@ -9,7 +9,7 @@
 </h1>
 
 <p align="center">
-  <a href="https://e-commerce-electronic.vercel.app" target="_blank">
+  <a href="https://e-commerce-electronic-chi.vercel.app/" target="_blank">
     <img src="https://img.shields.io/badge/Live_Demo-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo">
   </a>
   <a href="https://github.com/ahmeteyibil/e-commerce-electronic" target="_blank">
@@ -51,7 +51,7 @@ Amacı, kalabalık ve karmaşık e-ticaret sitelerinin aksine, alışverişin te
 
 **Frontend:**
 - HTML5, CSS3, JavaScript (Vanilla)
-- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework (düşünülüyorsa)
+- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
 
 **Hosting & Infrastructure:**
 - [Vercel](https://vercel.com/) - Frontend ve Serverless Functions
