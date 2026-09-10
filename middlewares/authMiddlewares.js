@@ -1,14 +1,28 @@
+require('dotenv').config();
+
 const uuidModule = import('uuid');
+const jwt = require('jsonwebtoken');
 
 const requireAuth = (req, res, next) => {
-    if (!req.session.user) {
+    const token = req.cookies.authToken;
+
+    if (!token) {
         return res.redirect('/login');
     }
 
-    next();
+    try {
+        // Token'ın sahte olup olmadığını ve süresini kontrol ediyoruz
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded; // Controller ve API mantığı için
+        next();
+    } catch (err) {
+        // Token süresi geçmiş veya oynanmış
+        res.clearCookie('authToken');
+        return res.redirect('/login');
+    }
 };
 
-const trySetQuestToken = async (req, res, next) => {
+const trySetGuestToken = async (req, res, next) => {
     try {
         const { v4: uuidv4 } = await uuidModule;
 
@@ -23,6 +37,8 @@ const trySetQuestToken = async (req, res, next) => {
             });
             console.log("Yeni guestToken ataması: ", guestToken);
             req.guestToken = guestToken;
+        } else if(req.session.user){
+            res.clearCookie("guest_token");
         } else {
             req.guestToken = req.cookies.guest_token;
         }
@@ -33,6 +49,6 @@ const trySetQuestToken = async (req, res, next) => {
 }
 
 module.exports = {
-    trySetQuestToken,
+    trySetGuestToken,
     requireAuth
 }

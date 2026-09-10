@@ -1,10 +1,11 @@
-const pool = require('../db')
+const pool = require('../db');
+const { getCartIdByCartItemId , getCartIdByUserId} = require('../services/cartService');
 const getCartItemCount = async (req, res, next) => {
     try {
         let totalCount = 0;
 
         // 1. Kullanıcı giriş yapmış mı yoksa misafir mi kontrol edelim
-        const userId = req.session.user ? req.session.user.id : null;
+        const userId = req.user ? req.user.id : null;
         const guestToken = req.guestToken; // Önceki adımda oluşturduğumuz çerez token'ı
 
         let queryStr = "";
@@ -30,7 +31,33 @@ const getCartItemCount = async (req, res, next) => {
         next();
     }
 }
+const cartItemUpdateAuthorize = async (req,res,next) =>{
+    const { cartItemId } = req.body;
 
+    const cartId = await getCartIdByCartItemId(cartItemId);
+
+    const userId = req.user ? req.user.id : null;
+    const guestToken = req.guestToken;
+    
+    const userCartId = await getCartIdByUserId(userId);
+    const guestCartId = await getCartIdByUserId(userId);
+
+    // cartId'nin şu anki kullanıcıya ait olup olmadığı kontrolü
+    if (userId && userCartId != cartId) {
+        return res.status(403).json({
+            success: false,
+            message: `Yetkisiz erişim. user'ın cartId'si: ${userCartId}, item'in cartId'si: ${cartId}`
+        })
+    }
+    else if (guestToken && guestCartId != cartId) {
+        return res.status(403).json({
+            success: false,
+            message: `Yetkisiz erişim. guest'in cartId'si: ${guestCartId}, item'in cartId'si: ${cartId}`
+        })
+    }
+    next();
+}
 module.exports = {
-    getCartItemCount
+    getCartItemCount,
+    cartItemUpdateAuthorize
 }

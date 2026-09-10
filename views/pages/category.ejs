@@ -9,15 +9,8 @@
     </div>
 
 </div>
+<script src="/js/product-box.js"></script>
 <script>
-    function convertToInCartButton(btn) {
-        btn.id = "in-cart-btn";
-        btn.classList.remove("bg-blue-700");
-        btn.classList.remove("hover:bg-blue-900");
-        btn.classList.add("hover:bg-green-900");
-        btn.classList.add("bg-green-700");
-        btn.textContent = "Sepette";
-    }
 
     // Sayfadaki HERHANGİ bir tıklamayı dinliyoruz
     document.addEventListener('click', async (e) => {

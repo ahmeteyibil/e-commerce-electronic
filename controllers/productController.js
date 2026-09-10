@@ -7,7 +7,7 @@ const getTrendsPage = async (req, res) => {
         const result = await pool.query('SELECT * FROM products ORDER BY id ASC');
         const products = result.rows; // Çekilen ürünler dizisi
 
-        res.render('pages/products', {
+        res.render('pages/trend-products', {
             title: 'Ürünler',
             products: products // Ürünleri EJS dosyasına yolluyoruz
         });

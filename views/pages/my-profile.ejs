@@ -4,11 +4,13 @@
     </div>
     <div class="profile-content p-4 flex justify-center items-center flex-col gap-y-4 border-4 border-solid border-black rounded-xl">
         <div class="info-box flex justify-between items-center">
-            <span>İsim: <%= user?.name ?? '' %></span>
+            <span>İsim: <%= userData?.name ?? '' %></span>
         </div>
-        <div class="info-box">Email: <%= user?.email ?? '' %>
+        <div class="info-box">Email: <%=  userData?.email ?? '' %>
         </div>
-        <div class="info-box">Hesap oluşturulma tarihi: <%= user?.createdAt ?? '' %>
+        <div class="info-box">Hesap oluşturulma tarihi: <%=  userData?.created_at ?? '' %>
+        </div>
+        <div class="info-box">Rol: <%=  userData?.role ?? '' %>
         </div>
     </div>
 </div>

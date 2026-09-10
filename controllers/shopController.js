@@ -3,9 +3,6 @@ const { addShopInfosIntoUserSession } = require('../utils/sessionUser');
 const shopService = require('../services/shopService');
 
 const getBecomeASellerPage = (req, res) => {
-    if (!req.session.user) {
-        return res.redirect('/login');
-    }
     res.render('pages/become-a-seller', {
         title: 'Satıcı ol',
         layout: false
@@ -15,7 +12,7 @@ const getBecomeASellerPage = (req, res) => {
 const createSellerAcount = async (req, res) => {
     const { shopName, slug, iban } = req.body;
     // const ibanControlUrl = `https://openiban.com/validate/${iban}?getBIC=true&validateBankCode=true`;
-    const userId = req.session.user ? req.session.user.id : null;
+    const userId = req.user ? req.user.id : null;
     if (!userId) {
         return res.json({
             success: false,
@@ -41,9 +38,9 @@ const createSellerAcount = async (req, res) => {
 
 const getMyShop = async (req, res) => {
     let shopId;
-    if (req.session.user) {
-        if (req.session.user.role == "seller") {
-            shopId = req.session.user.shopId;
+    if (req.user) {
+        if (req.user.role == "seller") {
+            shopId = shopService.getShopByUserId(req.user.id).shopId;
         }
         else {
             return res.status(401).send("Oturumdaki hesapta satıcı rolü bulunamadi.");

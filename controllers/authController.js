@@ -1,5 +1,8 @@
+require('dotenv').config();
+
 const pool = require('../db'); // Veritabanı bağlantısı
 const bcrypt = require('bcrypt'); // Şifre doğrulama için
+const jwt = require('jsonwebtoken');
 const { getShopByUserId } = require('../services/shopService');
 const { addShopInfosIntoUserSession, saveUserToSession } = require('../utils/sessionUser');
 
@@ -33,43 +36,22 @@ const login = async (req, res) => {
             });
         }
 
-
-        const userSessionData = {
+        const payload = {
             id: user.id,
-            name: user.name,
-            email: user.email,
-            role: "customer",
-            createdAt: user.created_at
+            role: user.role
         }
 
-        // Seller hesabı var mı? Kontrol et.
-        const shopDatas = await getShopByUserId(user.id);
+        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
 
-        // Eğer varsa, session bilgilerine onu da ekle.
-        if (shopDatas) {
-            userSessionData.role = "seller";
-            userSessionData.shopId = shopDatas.shopId;
-            userSessionData.shopName = shopDatas.shopName;
-        }
-        req.session.regenerate(function (err) {
-            if (err) return res.status(500).json({
-                success: false,
-                message: "Oturum oluşturulamadı."
-            });
+        res.cookie('authToken', token, {
+            httpOnly: true, // XSS saldırılarını korur.
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 gün
+        });
 
-            // Eski SID yok edildi, yepyeni bir SID üretildi. 
-            // Artık güvenle kullanıcı bilgilerini oturuma yazabiliriz.
-            saveUserToSession(req, userSessionData);
-            if (shopDatas) {
-                addShopInfosIntoUserSession(req, shopDatas.shopId, shopDatas.shopName);
-            }
-            // Başarılı giriş sonrası ana sayfaya yönlendiriyoruz
-            req.session.save(() => {
-                res.json({
-                    success: true,
-                    message: "Kullanıcı girişi başarılı. Ana sayfaya yönlendiriliyorsunuz."
-                });
-            });
+        res.json({
+            success: true,
+            message: "Kullanıcı girişi başarılı. Ana sayfaya yönlendiriliyorsunuz."
         });
     } catch (err) {
         console.error('Giriş hatası:', err.message);
@@ -124,27 +106,23 @@ const register = async (req, res) => {
     }
 }
 const getLogout = async (req, res) => {
-    if (res.locals.user) {
-        logOutUser(req, res);
+    if (req.cookies.authToken) {
+        logout(req,res);
     }
     else {
-        res.redirect('/');
+        res.status(403).json({
+            success: false,
+            message: "Kullanici girişi olmadığı için kullanıcı çıkışı yapılamadı."
+        });
     }
 }
-const logOutUser = (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            console.error("Çıkış yaparken hata oluştu:", err);
-            return res.status(500).send("Sunucu Hatası");
-        }
-
-        // Tarayıcıdaki oturum çerezini (cookie) temizliyoruz 
-        // (express-session varsayılan olarak çerez adını 'connect.sid' yapar)
+const logout = (req,res) => {
+    req.session.destroy(() => {
         res.clearCookie('connect.sid');
-
-        // Kullanıcıyı ana sayfaya veya giriş sayfasına yönlendiriyoruz
+        res.clearCookie('authToken');
         res.redirect('/');
     });
+
 }
 module.exports = {
     getLoginPage,

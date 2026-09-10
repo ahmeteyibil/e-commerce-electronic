@@ -1,9 +1,16 @@
 const pool = require('../db')
+const cartService = require('../services/cartService');
 
 const addItemToCart = async (req, res) => {
     try {
         const { productId, quantity } = req.body;
-        const userId = req.session.user ? req.session.user.id : null;
+        if (quantity <= 0) {
+            return res.json({
+                success: false,
+                message: "Sepete ürün ekleme başarısız: Eklenecek ürün sayısı 0'dan büyük olmalıdır."
+            })
+        }
+        const userId = req.user ? req.user.id : null;
         const guestToken = req.guestToken;
 
         let cartId;
@@ -47,13 +54,8 @@ const addItemToCart = async (req, res) => {
         // ==========================================
         // 3. ADIM: GÜNCEL SEPET SAYISINI HESAPLA (Header için)
         // ==========================================
-        const countQuery = `
-            SELECT SUM(quantity) as total 
-            FROM cart_items 
-            WHERE cart_id = $1
-        `;
-        const countResult = await pool.query(countQuery, [cartId]);
-        const totalCount = countResult.rows[0].total;
+        const cartStatus = await cartService.getCartStatus(cartId);
+        const totalCount = cartStatus.cartTotalCount;
 
         // const productQuery = "SELECT * as product from products WHERE id = $1";
         // const productResults = await pool.query(productQuery, [productId]);
@@ -76,8 +78,8 @@ const addItemToCart = async (req, res) => {
 const getCartPage = async (req, res) => {
     // 1. karttaki ürünleri alır.
     // 2. kartın toplam maliyetini hesaplar.
-    
-    const userId = req.session.user ? req.session.user.id : null;
+
+    const userId = req.user ? req.user.id : null;
     const guestToken = req.guestToken ? req.guestToken : null;
 
     let getCartIdQuery = "";
@@ -96,7 +98,7 @@ const getCartPage = async (req, res) => {
         if (getCartIdQuery !== "") {
             const cartIdResults = await pool.query(getCartIdQuery, parameters);
             var cartItemsWithProduct;
-            if(cartIdResults.rowCount < 0){
+            if (cartIdResults.rowCount < 0) {
                 cartItemsWithProduct = null;
             }
             const { id } = cartIdResults.rows[0];
@@ -106,7 +108,7 @@ const getCartPage = async (req, res) => {
             const itemResults = await pool.query(getItemsQuery, [id]);
             cartItemsWithProduct = itemResults.rows;
             // Sepetin toplam maliyetini ve sepetteki item sayısını çek.
-            const cartStatus = await getCartStatus(id);
+            const cartStatus = await cartService.getCartStatus(id);
             cartTotalCount = cartStatus.cartTotalCount;
             cartTotalCost = cartStatus.cartTotalCost;
         }
@@ -119,26 +121,37 @@ const getCartPage = async (req, res) => {
 }
 
 const decreaseQuantity = async (req, res) => {
-    console.log("decreaseQuantityFromCart() worked.")
     const { cartItemId } = req.body;
+    const userId = req.user ? req.user.id : null;
+    const guestToken = req.guestToken;
 
-    // Mevcut quantity bilgisini al, eğer 1'den büyükse devam et. Değilse çalıştırma.
-    const currentQuantityResult = await pool.query("SELECT quantity from cart_items WHERE id = $1", [cartItemId]);
-    const currentQuantity = currentQuantityResult.rows[0].quantity;
-    if (currentQuantity <= 1) {
-        console.log("Decrease işlemi yapılamaz. Mevcut miktar 0'dan küçük veya eşit.");
-        return;
-    }
-    let decreaseQuery = 'UPDATE cart_items SET quantity = ($1 - 1) WHERE id = $2 RETURNING quantity';
     try {
-        const result = await pool.query(decreaseQuery, [currentQuantity, cartItemId]);
+        const currentItemResult = await pool.query("SELECT quantity, cart_id from cart_items WHERE id = $1", [cartItemId]);
+        const currentQuantity = currentItemResult.rows[0].quantity; // Stok miktarı kontrolü yapılacak.
+        if (currentQuantity <= 1) {
+            return res.status(405).json({
+                success: false,
+                message: "Ürün miktarı daha fazla azaltılamaz."
+            });
+        }
+
+        let decreaseQuery;
+        let parameters;
+        if (userId) {
+            decreaseQuery = `UPDATE cart_items AS ci SET quantity = ci.quantity - 1 FROM carts AS c WHERE ci.id = $1 AND ci.cart_id = c.id AND c.user_id = $2 RETURNING ci.quantity, ci.cart_id`;
+            parameters = [cartItemId, userId];
+        }
+        else if (guestToken) {
+            decreaseQuery = `UPDATE cart_items AS ci SET quantity = ci.quantity - 1 FROM carts AS c WHERE ci.id = $1 AND ci.cart_id = c.id AND c.guest_token = $2 RETURNING ci.quantity, ci.cart_id`;
+            parameters = [cartItemId, guestToken];
+        }
+        const result = await pool.query(decreaseQuery, parameters);
         if (result.rowCount > 0) {
             console.log("Karttaki item sayısı başarıyla 1 düşürüldü");
             const newQuantity = result.rows[0].quantity;
-            const cartId = await getCartIDFromCartItemID(cartItemId);
-            // const totalCount = await calculateTotalCartCount(cartId);
-
-            const cartStatus = await getCartStatus(cartId);
+            // CartID'yi al
+            const cartId = result.rows[0].cart_id;
+            const cartStatus = await cartService.getCartStatus(cartId);
             // Tıklanan o spesifik ürünün kendi güncel toplamını da bulalım
             const itemCostQuery = `SELECT (ci.quantity * p.price) as item_total FROM cart_items ci JOIN products p ON ci.product_id = p.id WHERE ci.id = $1`;
             const itemCostResult = await pool.query(itemCostQuery, [cartItemId]);
@@ -165,21 +178,33 @@ const increaseQuantity = async (req, res) => {
     console.log("increaseQuantityFromCart() worked.")
     const { cartItemId } = req.body;
 
-    // Şu anki quantity stok sayısına eşit veya büyük ise, fonksiyonu bitir. Arttırma yapma.
+    const userId = req.user ? req.user.id : null;
+    const guestToken = req.guestToken;
 
-    let increaseQuery = 'UPDATE cart_items SET quantity = (quantity + 1) WHERE id = $1 RETURNING quantity';
+    const actor = getCartActor(req);
     try {
-        const increaseResult = await pool.query(increaseQuery, [cartItemId]);
+        // Şu anki quantity stok sayısına eşit veya büyük ise, fonksiyonu bitir. Arttırma yapma.
+        const currentItemResult = await pool.query("SELECT quantity, cart_id from cart_items WHERE id = $1", [cartItemId]);
+        const currentQuantity = currentItemResult.rows[0].quantity; // Stok miktarı kontrolü yapılacak.
+
+        let increaseQuery;
+        let parameters;
+        if (userId) {
+            increaseQuery = `UPDATE cart_items AS ci SET quantity = ci.quantity + 1 FROM carts AS c WHERE ci.id = $1 AND ci.cart_id = c.id AND c.user_id = $2 RETURNING ci.quantity, ci.cart_id`;
+            parameters = [cartItemId, userId];
+        }
+        else if (guestToken) {
+            increaseQuery = `UPDATE cart_items AS ci SET quantity = ci.quantity + 1 FROM carts AS c WHERE ci.id = $1 AND ci.cart_id = c.id AND c.guest_token = $2 RETURNING ci.quantity, ci.cart_id`;
+            parameters = [cartItemId, guestToken];
+        }
+
+        const increaseResult = await pool.query(increaseQuery, parameters);
         if (increaseResult.rowCount > 0) {
             // Yeni miktar
             const newQuantity = increaseResult.rows[0].quantity;
             // CartID'yi al
-            const cartId = await getCartIDFromCartItemID(cartItemId);
-            console.log("Increase yapılan cartId: ", cartId);
-            // Karttaki toplam miktarı hesapla.
-            // const totalCount = await calculateTotalCartCount(cartId);
-
-            const cartStatus = await getCartStatus(cartId);
+            const cartId = increaseResult.rows[0].cart_id;
+            const cartStatus = await cartService.getCartStatus(cartId);
             // Tıklanan o spesifik ürünün kendi güncel toplamını da bulalım
             const itemCostQuery = `SELECT (ci.quantity * p.price) as item_total FROM cart_items ci JOIN products p ON ci.product_id = p.id WHERE ci.id = $1`;
             const itemCostResult = await pool.query(itemCostQuery, [cartItemId]);
@@ -204,15 +229,51 @@ const increaseQuantity = async (req, res) => {
 }
 const removeItem = async (req, res) => {
     const { cartItemId } = req.body;
-    const removeQuery = "DELETE from cart_items WHERE id = $1";
+    const userId = req.user ? req.user.id : null;
+    const guestToken = req.guestToken;
+
     try {
-        // Önce cartID'yi alıyoruz. Çünkü sildikten sonra alamayız.
-        const cartId = await getCartIDFromCartItemID(cartItemId);
-        // Silme işlemi
-        const removeResults = await pool.query(removeQuery, [cartItemId]);
-        const isRemoved = removeResults.rowCount > 0;
+        let removeQuery;
+        let parameters;
+
+        if (userId) {
+            removeQuery = `
+                    DELETE FROM cart_items AS ci
+                    USING carts AS c
+                    WHERE ci.id = $1
+                      AND ci.cart_id = c.id
+                      AND c.user_id = $2
+                    RETURNING ci.cart_id
+                `;
+            parameters = [cartItemId, userId];
+        } else if (guestToken) {
+            removeQuery = `
+                    DELETE FROM cart_items AS ci
+                    USING carts AS c
+                    WHERE ci.id = $1
+                      AND ci.cart_id = c.id
+                      AND c.guest_token = $2
+                    RETURNING ci.cart_id
+                `;
+            parameters = [cartItemId, guestToken];
+        } else {
+            return res.status(401).json({
+                success: false,
+                message: 'Kullanıcı doğrulanamadı.'
+            });
+        }
+
+        const removeResults = await pool.query(removeQuery, parameters);
+        if (removeResults.rowCount === 0) {
+            return res.status(403).json({
+                success: false,
+                message: 'Sepet ürünü bulunamadı veya yetkiniz yok.'
+            });
+        }
+
+        const cartId = removeResults.rows[0].cart_id;
         // Yeni sepet bilgileri.
-        const cartStatus = await getCartStatus(cartId);
+        const cartStatus = await cartService.getCartStatus(cartId);
 
         res.json({
             success: true,
@@ -226,43 +287,13 @@ const removeItem = async (req, res) => {
     }
 }
 
-// YARDIMCI FONKSİYONLAR
-// const calculateTotalCartCount = async (cartID) => {
-//     const countQuery = `SELECT SUM(quantity) as total FROM cart_items WHERE cart_id = $1`;
-//     try {
-//         const countResult = await pool.query(countQuery, [cartID]);
-//         const totalCount = parseInt(countResult.rows[0].total, 10) || 0;
-//         return totalCount;
-//     } catch (er) {
-//         console.log("Karttaki ürün sayısı hesaplanırken hata oluştu: ", er.message)
-//         return -1;
-//     }
-// }
-const getCartStatus = async (cartID) => {
-    // Sepetin güncel durumunu hesaplayan tek bir harika sorgu:
-    const cartStatusQuery = `SELECT SUM(ci.quantity) as total_items, SUM(ci.quantity * p.price) as total_cost FROM cart_items ci JOIN products p ON ci.product_id = p.id WHERE ci.cart_id = $1`;
+// Yardımcı fonksiyonlar
 
-    try {
-        const cartStatusResult = await pool.query(cartStatusQuery, [cartID]);
-        const cartTotalCount = parseInt(cartStatusResult.rows[0].total_items, 10) || 0;
-        const cartTotalCost = parseInt(cartStatusResult.rows[0].total_cost, 10) || 0;
-        return { cartTotalCount, cartTotalCost };
-    } catch (er) {
-        console.log("Karttaki ürün sayısı hesaplanırken hata oluştu: ", er.message)
-        return -1;
-    }
-}
-const getCartIDFromCartItemID = async (cartItemID) => {
-    const cartIdQuery = "SELECT cart_id from cart_items WHERE id = $1";
-    try {
-        const cartIdResults = await pool.query(cartIdQuery, [cartItemID]);
-        const cartId = cartIdResults.rows[0].cart_id;
-        return cartId;
-    } catch (er) {
-        console.log("Karttaki ürün sayısı hesaplanırken hata oluştu: ", er.message)
-        return -1;
-    }
-}
+const getCartActor = (req) => ({
+    userId: req.session.user ? req.session.user.id : null,
+    guestToken: req.guestToken || null
+});
+
 module.exports = {
     addItemToCart,
     getCartPage,

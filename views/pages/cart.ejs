@@ -19,9 +19,7 @@
                     </span>₺
                 </span>
             </div>
-            <button
-                class="submit-payment-btn px-4 py-2 rounded-lg bg-green-700 font-bold text-white outline-none hover:bg-green-900 transition-all duration-300 cursor-pointer">Ödeme
-                yap</button>
+            <button id="pay-btn" class="px-4 py-2 rounded-lg bg-green-700 font-bold text-white outline-none hover:bg-green-900 transition-all duration-300 cursor-pointer">Ödeme yap</button>
         </div>
     </div>
 
@@ -32,6 +30,7 @@
     const cartCounter = document.getElementById('cart-count');
     const totalCountEl = document.querySelector(".total-count-value");
     const totalCostEl = document.querySelector(".total-cost-value");
+    const payBtn = document.querySelector("#pay-btn");
     // Helper: set decrease button state and classes consistently
     function setDecreaseState(decBtn, disabled) {
         if (!decBtn) return;
@@ -60,6 +59,10 @@
 
     // Sayfadaki HERHANGİ bir tıklamayı dinliyoruz
     cartItemBoxes.addEventListener('click', async (e) => {
+
+        if(e.target.id == "pay-btn"){
+            
+        }
 
         const removeBtn = e.target.closest('.remove-item-btn');
         if (removeBtn) {
