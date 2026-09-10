@@ -95,4 +95,4 @@ cp .env.example .env
 # Neon veya local PostgreSQL kullanabilirsin
 
 # 5. Uygulamayı çalıştır
-npm start
+npm run dev
