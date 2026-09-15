@@ -5,11 +5,13 @@ const {
     decreaseQuantity,
     increaseQuantity,
     getCartPage,
-    removeItem
+    removeItem,
+    getMakePaymentPage
 } = require('../controllers/cartController');
 const { cartItemUpdateAuthorize } = require('../middlewares/cartMiddlewares');
 
 router.get("/", getCartPage);
+router.get("/make-payment", getMakePaymentPage);
 router.post('/add', addItemToCart);
 router.post('/increase', increaseQuantity);
 router.post('/decrease', decreaseQuantity);

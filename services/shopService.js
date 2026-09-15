@@ -24,18 +24,28 @@ const getShopProductsById = async (shopId) => {
     const query = "SELECT * from products WHERE shop_id = $1";
     try {
         const response = await pool.query(query, [shopId]);
-        if (response.rowCount === 0) {
-            return null;
-        }
         const products = response.rows;
         return products;
     } catch (err) {
         console.log("Mağazanın ürünleri veritabanından çekilirken bir hata oluştu");
     }
+    return null;
+}
 
+const getCategories = async () => {
+    let categories;
+    try{
+        const query = "SELECT id,name FROM categories";
+        const response = await pool.query(query);
+        categories = response.rows;
+    } catch(err){
+        console.log("Veritabanından kategoriler çekilirken hata oluştu: ", err.message);
+    }
+    return categories;
 }
 
 module.exports = {
     getShopProductsById,
-    getShopByUserId
+    getShopByUserId,
+    getCategories
 };

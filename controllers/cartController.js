@@ -286,6 +286,9 @@ const removeItem = async (req, res) => {
         res.status(500);
     }
 }
+const getMakePaymentPage = (req,res) =>{
+    
+}
 
 // Yardımcı fonksiyonlar
 
@@ -299,5 +302,6 @@ module.exports = {
     getCartPage,
     decreaseQuantity,
     increaseQuantity,
-    removeItem
+    removeItem,
+    getMakePaymentPage
 }

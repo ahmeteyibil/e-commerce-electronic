@@ -1,6 +1,8 @@
 <div class="flex flex-col gap-y-4">
     <div class="cart-header">
-        <h1 class="text-4xl capitalize font-bold">Sepetim (<span class="total-count-value"><%= totalCount %></span>)</h1>
+        <h1 class="text-4xl capitalize font-bold">Sepetim (<span class="total-count-value">
+                <%= totalCount %>
+            </span>)</h1>
     </div>
     <div class="cart-content flex justify-between items-start w-full gap-x-4 min-h-120">
         <div class="cart-item-boxes flex flex-col gap-y-4 justify-center items-start">
@@ -19,7 +21,9 @@
                     </span>₺
                 </span>
             </div>
-            <button id="pay-btn" class="px-4 py-2 rounded-lg bg-green-700 font-bold text-white outline-none hover:bg-green-900 transition-all duration-300 cursor-pointer">Ödeme yap</button>
+            <button id="pay-btn"
+                class="px-4 py-2 rounded-lg bg-green-700 font-bold text-white outline-none hover:bg-green-900 transition-all duration-300 cursor-pointer">Ödeme
+                yap</button>
         </div>
     </div>
 
@@ -27,10 +31,10 @@
 
 <script>
     const cartItemBoxes = document.querySelector(".cart-item-boxes");
-    const cartCounter = document.getElementById('cart-count');
+    const cartCounterEl = document.getElementById('cart-count');
     const totalCountEl = document.querySelector(".total-count-value");
     const totalCostEl = document.querySelector(".total-cost-value");
-    const payBtn = document.querySelector("#pay-btn");
+    const payBtn = document.getElementById("pay-btn");
     // Helper: set decrease button state and classes consistently
     function setDecreaseState(decBtn, disabled) {
         if (!decBtn) return;
@@ -55,15 +59,26 @@
         });
     }
 
+    function setPayButtonState(cartCount) {
+        const isEmpty = Number(cartCount) <= 0;
+        payBtn.disabled = isEmpty;
+        payBtn.setAttribute('aria-disabled', String(isEmpty));
+        payBtn.classList.toggle('cursor-pointer', !isEmpty);
+        payBtn.classList.toggle('bg-green-700', !isEmpty);
+        payBtn.classList.toggle('hover:bg-green-900', !isEmpty);
+        payBtn.classList.toggle('cursor-not-allowed', isEmpty);
+        payBtn.classList.toggle('bg-gray-400', isEmpty);
+    }
+
     initQuantityButtons();
+    // setPayButtonState();
 
-    // Sayfadaki HERHANGİ bir tıklamayı dinliyoruz
+    payBtn.addEventListener("click", () => {
+        window.location.href = "/cart-make-payment";
+    });
+
+    // cartItemBoxes içerisindeki HERHANGİ bir tıklamayı dinliyoruz
     cartItemBoxes.addEventListener('click', async (e) => {
-
-        if(e.target.id == "pay-btn"){
-            
-        }
-
         const removeBtn = e.target.closest('.remove-item-btn');
         if (removeBtn) {
             try {
@@ -80,9 +95,9 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    if (cartCounter && data.cartCount !== undefined) {
+                    if (cartCounterEl && data.cartCount !== undefined) {
                         console.log("api'den gelen cartCount bilgisi: ", data.cartCount);
-                        cartCounter.innerText = data.cartCount;
+                        cartCounterEl.innerText = data.cartCount;
                     }
                     if (totalCountEl && data.cartCount !== undefined) {
                         totalCountEl.textContent = data.cartCount;
@@ -93,6 +108,7 @@
                     // DOM elementini sil.
                     const cartItemBox = removeBtn.closest(".cart-item-box");;
                     cartItemBox.remove();
+                    setPayButtonState(data.cartCount);
                 }
                 else {
                     console.log("Sepet item'i silinmesi başarısız oldu");
@@ -100,6 +116,7 @@
             } catch (err) {
                 console.error("Sepetten ürün silme hatası:", err);
             }
+            return;
         }
 
         const quaChangeBtn = e.target.closest('.quantity-change-btn');
@@ -147,8 +164,8 @@
                     else {
                         console.log("valueElement ögesi bulunamadığı için miktar bilgisi dinamik olarak güncellenemedi.")
                     }
-                    if (cartCounter && data.cartCount !== undefined) {
-                        cartCounter.innerText = data.cartCount;
+                    if (cartCounterEl && data.cartCount !== undefined) {
+                        cartCounterEl.innerText = data.cartCount;
                     }
                     if (totalCountEl && data.cartCount !== undefined) {
                         totalCountEl.textContent = data.cartCount;
@@ -156,6 +173,7 @@
                     if (totalCostEl && data.cartCost !== undefined) {
                         totalCostEl.textContent = data.cartCost;
                     }
+                    setPayButtonState(data.cartCount);
                 }
                 else {
                     console.log("Sepet ürünü miktarı değiştirme işlemi başarısız oldu");

@@ -16,18 +16,50 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/images/icon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/images/icon/favicon-16x16.png">
     <link rel="manifest" href="/images/icon/site.webmanifest">
+    <style>
+        .alert-text::after {
+            content: '';
+            background: white;
+            width: 100%;
+            height: 1px;
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            transform-origin: left;
+            /* Soldan sağa erimesi için*/
+            animation: countdown var(--duration, 3s) linear forwards;
+        }
+
+        @keyframes countdown {
+            from {
+                transform: scaleX(1);
+            }
+
+            to {
+                transform: scaleX(0);
+            }
+        }
+    </style>
 </head>
 
 <body class="bg-linear-to-b from-slate-200 to-white text-gray-800 min-h-screen relative">
     <%- include('../partials/header', {cartItemCount: cartItemCount}) %>
         <div class="border border-cyan-950 flex justify-center items-center">
-            <div class="container w-full h-[calc(100vh-5rem)] flex justify-center items-center p-4">
+            <div class="container w-full min-h-[calc(100vh-5rem)] flex justify-center items-center p-4">
                 <%- body %>
             </div>
         </div>
-        <!-- Cart Modal -->
+        <div id="alert-popup"
+            class="opacity-0 fixed bottom-4 right-4 bg-blue-600 py-2 px-4 flex justify-center items-center text-white transition-all duration-200">
+            <div id="alert-text" class="relative alert-text w-full h-full ">
+                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Minus, vitae.
+            </div>
+        </div>
         <%- include('../partials/cart-modal') %>
             <script src="/js/cart-modal.js"></script>
+            <script src="/js/alert-popup.js"></script>
+
+
 </body>
 
 
