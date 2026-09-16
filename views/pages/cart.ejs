@@ -22,8 +22,10 @@
                 </span>
             </div>
             <button id="pay-btn"
-                class="px-4 py-2 rounded-lg bg-green-700 font-bold text-white outline-none hover:bg-green-900 transition-all duration-300 cursor-pointer">Ödeme
-                yap</button>
+                class="px-4 py-2 rounded-lg bg-green-700 font-bold text-white outline-none hover:bg-green-900 transition-all duration-300 cursor-pointer">
+                <a href="/cart/make-payment" class="w-full h-full">Ödeme
+                yap</a>
+            </button>
         </div>
     </div>
 
@@ -73,9 +75,7 @@
     initQuantityButtons();
     // setPayButtonState();
 
-    payBtn.addEventListener("click", () => {
-        window.location.href = "/cart-make-payment";
-    });
+
 
     // cartItemBoxes içerisindeki HERHANGİ bir tıklamayı dinliyoruz
     cartItemBoxes.addEventListener('click', async (e) => {

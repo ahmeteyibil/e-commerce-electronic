@@ -44,9 +44,22 @@ const getCartStatus = async (cartID) => {
         return -1;
     }
 }
+const getCartProductDatas = async (cartId) => {
+    const query = `SELECT row_to_json(ci) AS cart_item, row_to_json(p) AS product FROM cart_items ci
+     JOIN products p ON ci.product_id = p.id WHERE ci.cart_id = $1`;
+    var items = null;
+    try{
+        const response = await pool.query(query, [cartId]);
+        items = response.rows;
+    } catch(err){
+        console.log("Veri tabanından ürünler çekilirken hata oluştu: ", err.message);
+    }
+    return items;
+}
 module.exports = {
     getCartIdByUserId,
     getCartIdByGuestToken,
     getCartIdByCartItemId,
-    getCartStatus
+    getCartStatus,
+    getCartProductDatas
 }

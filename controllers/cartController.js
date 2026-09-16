@@ -286,14 +286,28 @@ const removeItem = async (req, res) => {
         res.status(500);
     }
 }
-const getMakePaymentPage = (req,res) =>{
-    
+const getMakePaymentPage = async (req, res) => {
+    try {
+        const actor = getCartActor(req);
+        let cartId;
+        if (actor.userId) {
+            cartId = await cartService.getCartIdByUserId(actor.userId);
+        }
+        else {
+            cartId = await cartService.getCartIdByGuestToken(actor.guestToken);
+        }
+        const itemDatas = await cartService.getCartProductDatas(cartId);
+        res.render("pages/make-payment.ejs", { title: "Ödeme Sayfası" , itemDatas: itemDatas });
+    } catch (err) {
+        console.log("Make payment sayfası yüklenirken hata oluştu:", err.message);
+    }
+
 }
 
 // Yardımcı fonksiyonlar
 
 const getCartActor = (req) => ({
-    userId: req.session.user ? req.session.user.id : null,
+    userId: req.user ? req.user.id : null,
     guestToken: req.guestToken || null
 });
 

@@ -39,13 +39,19 @@
                 transform: scaleX(0);
             }
         }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
     </style>
 </head>
 
 <body class="bg-linear-to-b from-slate-200 to-white text-gray-800 min-h-screen relative">
     <%- include('../partials/header', {cartItemCount: cartItemCount}) %>
         <div class="border border-cyan-950 flex justify-center items-center">
-            <div class="container w-full min-h-[calc(100vh-5rem)] flex justify-center items-center p-4">
+            <div class="container w-full min-h-[calc(100vh-5rem)] flex justify-center items-center">
                 <%- body %>
             </div>
         </div>

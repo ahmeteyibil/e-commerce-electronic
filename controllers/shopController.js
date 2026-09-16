@@ -40,7 +40,8 @@ const getMyShop = async (req, res) => {
     let shopId;
     if (req.user) {
         if (req.user.role == "seller") {
-            shopId = shopService.getShopByUserId(req.user.id).shopId;
+            const shop = await shopService.getShopByUserId(req.user.id);
+            shopId = shop?.shopId;
         }
         else {
             return res.status(401).send("Oturumdaki hesapta satıcı rolü bulunamadi.");
@@ -76,7 +77,7 @@ const addItemToShop = async (req, res) => {
         name = name?.trim();
         description = description?.trim();
         imgUrl = imgUrl?.trim();
-        
+
         const query = `INSERT INTO products (name,description,price,image_url,category_id,shop_id)
         VALUES ($1,$2,$3,$4,$5,$6) 
         RETURNING *`;
@@ -84,7 +85,7 @@ const addItemToShop = async (req, res) => {
         const parameters = [name, description, price, imgUrl, categoryId, shopId];
 
         const response = await pool.query(query, parameters);
-        if (response.rowCount > 0){
+        if (response.rowCount > 0) {
             const product = response.rows[0];
             return res.status(201).json({
                 success: true,
@@ -92,7 +93,7 @@ const addItemToShop = async (req, res) => {
                 product: product
             })
         }
-        else{
+        else {
             return res.status(400).json({
                 success: false,
                 message: "Ürün ekleme başarısız.",

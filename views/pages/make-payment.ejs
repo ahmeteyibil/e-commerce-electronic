@@ -1,18 +1,56 @@
-<section id="make-payment-section">
-    <form id="payment-form">
-        <div id="input-box" class="flex justify-between items-center gap-x-0 border border-gray-400 border-solid rounded-md">
-            <div class="icon-area">
-                <i class=""></i>
-            </div>
-            <div class="input-area flex flex-col justify-center items-center w-60 h-72">
-                <input type="text" name="card-owner-name" id="card-owner-name" placeholder="Kart üzerindeki Ad Soyad">
-                <input type="text" name="card-number" id="card-number" placeholder="Kart numarası">
-                <div class="flex">
-                    <input type="text" name="card-expire-date" id="card-expire-date" placeholder="Ay / Yıl">
-                </div>
-                
+<section id="make-payment-section" class="w-full min-h-[calc(100vh-5rem)] flex justify-center items-start p-8 gap-x-16">
+    <div id="info-area" class="bg-gray-300 rounded-xl p-8 w-240 h-160 flex flex-col gap-y-4 items-start justify-start">
+        <h1 class="text-4xl font-semibold">Ürünler</h1>
+        <div id="item-payment-boxes"
+            class="flex gap-x-4 items-center justify-start border border-solid border-black p-2 w-4/5">
+            <% itemDatas.forEach(itemData=> { %>
+                <%- include('../partials/item-payment-box', {product: itemData.product, quantity:
+                    itemData.cart_item.quantity}) %>
+                    <% }); %>
+        </div>
+        <h1 class="text-4xl font-semibold mt-4">Kart Bilgileri</h1>
 
+        <form id="payment-form" class="p-4 border border-solid border-black">
+            <div class="input-area flex flex-col justify-start items-start gap-y-2">
+                <div id="input-box" class="">
+                    <input type="text" name="card-owner-name" id="card-owner-name"
+                        placeholder="Kart üzerindeki Ad Soyad"
+                        class="px-4 py-2 border border-solid border-gray-400 rounded-md outline-none bg-[#EDEDED] w-96 text-lg">
+                </div>
+                <div id="input-box" class="">
+                    <input type="text" name="card-number" id="card-number" placeholder="Kart numarası"
+                        class="px-4 py-2 border border-solid border-gray-400 rounded-md outline-none bg-[#EDEDED] w-96 text-lg">
+                </div>
+                <div id="input-box" class="flex justify-center items-center gap-x-4">
+                    <input type="text" inputmode="numeric" pattern="(0?[1-9]|1[0-2])" name="card-expire-date-month"
+                        id="card-expire-date-month" placeholder="Ay" maxlength="2"
+                        class="px-4 py-2 border border-solid border-gray-400 rounded-md outline-none bg-[#EDEDED] w-24 text-lg">
+                    <input type="text" inputmode="numeric" pattern="[0-9]{4}" name="card-expire-date-year"
+                        id="card-expire-date-year" placeholder="Yıl" maxlength="4"
+                        class="px-4 py-2 border border-solid border-gray-400 rounded-md outline-none bg-[#EDEDED] w-24 text-lg">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div id="invoice-area"
+        class="flex flex-col justify-between items-start gap-y-4 border-2 border-solid border-gray-300 p-6 h-120 rounded-md">
+        <div id="cart-summary" class="p-2">
+            <h1 class="text-2xl font-bold mb-4">Sepet özeti</h1>
+            <div id="invoice-lines" class="flex flex-col justify-between items-start gap-y-2">
+                <% itemDatas.forEach(itemData=> { %>
+                    <div id="invoice-line" class="flex justify-start items-center gap-x-4 p-1">
+                        <span id="item-name-and-quantity"><%- itemData.product.name %> x <%- itemData.cart_item.quantity
+                                    %></span>
+                        <i class="fa-solid fa-right-long"></i>
+                        <span id="item-price">
+                            <%= itemData.product.price*itemData.cart_item.quantity %> TL
+                        </span>
+                    </div>
+                    <% }); %>
             </div>
         </div>
-    </form>
+        <div class="w-full">
+            <button id="make-payment-btn" class="px-6 py-2 w-[90%] bg-blue-600 text-white cursor-pointer">Ödemeyi yap</button>
+        </div>
+    </div>
 </section>
