@@ -10,13 +10,7 @@
 
 <p align="center">
   <a href="https://e-commerce-electronic-chi.vercel.app/" target="_blank">
-    <img src="https://img.shields.io/badge/Live_Demo-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo">
-  </a>
-  <a href="https://github.com/ahmeteyibil/e-commerce-electronic" target="_blank">
-    <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Repository">
-  </a>
-  <a href="https://github.com/ahmeteyibil/e-commerce-electronic/blob/main/LICENSE.md" target="_blank">
-    <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="License">
+    <img src="https://img.shields.io/badge/Live_Demo-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Demo">
   </a>
 </p>
 
