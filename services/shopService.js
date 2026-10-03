@@ -21,7 +21,7 @@ const getShopByUserId = async (userId) => {
 };
 
 const getShopProductsById = async (shopId) => {
-    const query = "SELECT * from products WHERE shop_id = $1";
+    const query = `SELECT p.*, pi.image_url AS primary_image_url FROM products p LEFT JOIN product_images pi ON pi.product_id = p.id AND pi.is_primary = true ORDER BY p.id ASC`;
     try {
         const response = await pool.query(query, [shopId]);
         const products = response.rows;

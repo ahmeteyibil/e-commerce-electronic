@@ -1,0 +1,7 @@
+.input-box:has(input[required]) label::after,
+.input-box:has(select[required]) label::after,
+.input-box:has(textarea[required]) label::after {
+    content: " *";
+    color: #0640ff;
+    font-weight: bold;
+}

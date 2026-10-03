@@ -1,10 +1,20 @@
 const pool = require('../db');
-
+const { getProductInfos, getProductImages, getShopInfoForProduct } = require('../services/productService');
 // Ana sayfa ürünlerini getiren fonksiyon
 const getTrendsPage = async (req, res) => {
     try {
+        const query = `
+        SELECT 
+            p.*,
+            pi.image_url AS primary_image_url
+        FROM products p
+        LEFT JOIN product_images pi
+            ON pi.product_id = p.id
+            AND pi.is_primary = true
+        ORDER BY p.id ASC
+        `;
         // PostgreSQL'den ürünleri çekiyoruz
-        const result = await pool.query('SELECT * FROM products ORDER BY id ASC');
+        const result = await pool.query(query);
         const products = result.rows; // Çekilen ürünler dizisi
 
         res.render('pages/trend-products', {
@@ -18,32 +28,25 @@ const getTrendsPage = async (req, res) => {
 };
 
 const getProductPage = async (req, res) => {
-    const id = req.params.id; // :id
-    console.log("Bilgileri çekilip product.ejs'e yollanacak product'ın id'si: ", id);
-    const productInfos = await getProductById(id);
-    console.log(productInfos.name);
-    res.render('pages/product', { title: 'Ürün: ', product: productInfos });
+    const id = Number.parseInt(req.params.id, 10);
+    if (!Number.isInteger(id)) {
+        return res.status(400).send('Geçersiz ürün ID');
+    }
+
+    const productInfos = await getProductInfos(id);
+    const productImages = await getProductImages(id);
+    console.log("Ürün resimleri: ", productImages);
+    const productShopInfos = await getShopInfoForProduct(id);
+    if (!productInfos) {
+        return res.status(404).send('Ürün bulunamadı');
+    }
+    res.render('pages/product', { title: 'Ürün: ', product: productInfos, productImages: productImages, shopName: productShopInfos.shop_name });
 };
 
 
 // YARDIMCI FONKSİYONLAR:
 
-const getProductById = async (productId) => {
-    const query = "SELECT * from products WHERE id = $1";
-    let product;
-    try {
-        const result = await pool.query(query, [productId]);
-        if (result.rowCount > 0) {
-            product = result.rows[0];
-        }
-        else {
-            product = null;
-        }
-    } catch (err) {
-        console.log("ID ile ürün bilgisi çekilirken hata: ", err.message);
-    }
-    return product;
-}
+
 module.exports = {
     getTrendsPage,
     getProductPage

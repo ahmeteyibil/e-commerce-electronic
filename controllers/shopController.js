@@ -9,6 +9,38 @@ const getBecomeASellerPage = (req, res) => {
     });
 }
 
+async function getMyProducts(req, res) {
+    try {
+        const { shopId } = req.body;
+        const userId = req.user.id;
+        const userShopId = await shopService.getShopByUserId(userId);
+        if (shopId != userShopId) {
+            return res.status(401).json({
+                success: false,
+                message: "Yetkisiz erişim"
+            });
+        }
+        const products = await shopService.getShopProductsById(shopId);
+        if (!products) {
+            return res.status(500).json({
+                success: false,
+                message: "Ürünler null çekildi"
+            });
+        }
+        return res.status(200).json({
+            success: true,
+            products: products,
+            message: "Ürünler başarıyla getirildi"
+        });
+    } catch (err) {
+        console.log("Ürünler getirilirken bir hata oluştu: ", err.message);
+        return res.status(500).json({
+            success: false,
+            message: "Ürünler çekilemedi"
+        });
+    }
+}
+
 const createSellerAcount = async (req, res) => {
     const { shopName, slug, iban } = req.body;
     // const ibanControlUrl = `https://openiban.com/validate/${iban}?getBIC=true&validateBankCode=true`;
@@ -52,12 +84,12 @@ const getMyShop = async (req, res) => {
 
     console.log("categories:", categories);
     console.log("productDatas:", productDatas);
-    res.render('./pages/my-shop', { title: "Mağazam", products: productDatas, categories: categories });
+    res.render('./pages/my-shop', { title: "Mağazam", pageStyles: ['/css/my-shop.css'], products: productDatas, categories: categories });
 }
 const addItemToShop = async (req, res) => {
-    let { name, price, categoryId, description, imgUrl } = req.body;
+    let { productName, price, categoryId, description, imgUrl, additionalImgUrls} = req.body;
     try {
-        // Burada tarayıcıdaki jwt cookie'si ile hızlı bir sorgu yapılıp kullanıcının shopID'si çekilebilir.
+        // User var mı kontrolü
         const user = req.user || null;
         if (!user) {
             return res.status(401).json({
@@ -65,6 +97,15 @@ const addItemToShop = async (req, res) => {
                 message: "Ürün ekleme sırasında sunucu tarafında hata: Kullanıcı bulunamadı."
             });
         }
+        // Ekstra image sınırı aşılmış mı?
+        if(additionalImgUrls.length > 5){
+            return res.status(401).json({
+                success: false,
+                message: "Ekstra resim sınırı aşıldı."
+            });
+        }
+
+        // Mağaza bilgileri çekiliyor.
         const shopDatas = await shopService.getShopByUserId(user.id);
         if (!shopDatas) {
             return res.status(404).json({
@@ -74,19 +115,31 @@ const addItemToShop = async (req, res) => {
         }
         const shopId = shopDatas.shopId;
 
-        name = name?.trim();
+        productName = productName?.trim();
         description = description?.trim();
         imgUrl = imgUrl?.trim();
 
-        const query = `INSERT INTO products (name,description,price,image_url,category_id,shop_id)
-        VALUES ($1,$2,$3,$4,$5,$6) 
+        const itemAddQuery = `INSERT INTO products (name,description,price,category_id,shop_id)
+        VALUES ($1,$2,$3,$4,$5) 
         RETURNING *`;
 
-        const parameters = [name, description, price, imgUrl, categoryId, shopId];
+        const itemAddParams = [productName, description, price, categoryId, shopId];
 
-        const response = await pool.query(query, parameters);
-        if (response.rowCount > 0) {
-            const product = response.rows[0];
+        const itemAddResponse = await pool.query(itemAddQuery, itemAddParams);
+
+        const productId = itemAddResponse.rows[0].id;
+
+        const imgAddQuery = `INSERT INTO product_images (product_id, image_url, sort_order, is_primary)
+        VALUES ($1,$2,$3,$4)`;
+
+        await pool.query(imgAddQuery, [productId, imgUrl, 1, true]);
+
+        for (let i = 0; i < additionalImgUrls.length; i++) {
+            await pool.query(imgAddQuery, [productId, additionalImgUrls[i], i+2, false]);
+        }
+        
+        if (itemAddResponse.rowCount > 0) {
+            const product = itemAddResponse.rows[0];
             return res.status(201).json({
                 success: true,
                 message: "Ürün başarıyla eklendi.",
@@ -114,4 +167,5 @@ module.exports = {
     getBecomeASellerPage,
     createSellerAcount,
     addItemToShop,
+    getMyProducts
 }

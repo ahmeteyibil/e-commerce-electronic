@@ -15,7 +15,7 @@ router.get("/make-payment", getMakePaymentPage);
 router.post('/add', addItemToCart);
 router.post('/increase', increaseQuantity);
 router.post('/decrease', decreaseQuantity);
-router.post('/remove-item', cartItemUpdateAuthorize, removeItem);
+router.delete('/remove-item', cartItemUpdateAuthorize, removeItem);
 
 
 module.exports = router
