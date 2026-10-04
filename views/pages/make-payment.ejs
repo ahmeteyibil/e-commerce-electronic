@@ -1,36 +1,64 @@
 <section id="make-payment-section" class="w-full min-h-[calc(100vh-5rem)] flex justify-center items-start p-8 gap-x-16">
-    <div id="info-area" class="bg-gray-300 rounded-xl p-8 w-240 h-160 flex flex-col gap-y-4 items-start justify-start">
-        <h1 class="text-4xl font-semibold">Ürünler</h1>
-        <div id="item-payment-boxes"
-            class="flex gap-x-4 items-center justify-start border border-solid border-black p-2 w-4/5">
-            <% itemDatas.forEach(itemData=> { %>
-                <%- include('../partials/item-payment-box', {product: itemData.product, quantity:
-                    itemData.cart_item.quantity}) %>
-                    <% }); %>
-        </div>
-        <h1 class="text-4xl font-semibold mt-4">Kart Bilgileri</h1>
+    <div id="info-area" class="bg-gray-300 rounded-xl p-8 w-240 h-160 flex flex-col gap-y-8 items-start justify-start">
+        <div class="flex flex-col gap-y-4 items-start justify-start min-w-200">
+            <h1 class="text-4xl font-semibold">Ürünler</h1>
+            <!-- 🎠 SLIDER WRAPPER -->
+            <div class="slider-wrapper relative w-200 overflow-hidden">
+                <!-- ◀ Sol Ok -->
+                <button type="button" class="slider-btn slider-btn-prev absolute left-0 top-1/2 -translate-y-1/2 z-10 
+                   bg-white shadow-lg rounded-full p-3 hover:bg-gray-100 transition
+                   disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer" id="sliderPrevBtn">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
 
-        <form id="payment-form" class="p-4 border border-solid border-black">
-            <div class="input-area flex flex-col justify-start items-start gap-y-2">
-                <div id="input-box" class="">
-                    <input type="text" name="card-owner-name" id="card-owner-name"
-                        placeholder="Kart üzerindeki Ad Soyad"
-                        class="px-4 py-2 border border-solid border-gray-400 rounded-md outline-none bg-[#EDEDED] w-96 text-lg">
+                <!-- 📦 SLIDER TRACK (Ürünler buraya gelecek) -->
+                <div id="item-payment-boxes" class="slider-track flex gap-x-4 overflow-x-auto scroll-smooth
+                   px-12 py-4 scrollbar-hide">
+                    <% itemDatas.forEach(itemData=> { %>
+                        <%- include('../partials/payment-item-box', { product: itemData.product, quantity:
+                            itemData.cart_item.quantity, product_image: itemData.product_image }) %>
+                            <%- include('../partials/payment-item-box', { product: itemData.product, quantity:
+                            itemData.cart_item.quantity, product_image: itemData.product_image }) %>
+                            <% }); %>
                 </div>
-                <div id="input-box" class="">
-                    <input type="text" name="card-number" id="card-number" placeholder="Kart numarası"
-                        class="px-4 py-2 border border-solid border-gray-400 rounded-md outline-none bg-[#EDEDED] w-96 text-lg">
-                </div>
-                <div id="input-box" class="flex justify-center items-center gap-x-4">
-                    <input type="text" inputmode="numeric" pattern="(0?[1-9]|1[0-2])" name="card-expire-date-month"
-                        id="card-expire-date-month" placeholder="Ay" maxlength="2"
-                        class="px-4 py-2 border border-solid border-gray-400 rounded-md outline-none bg-[#EDEDED] w-24 text-lg">
-                    <input type="text" inputmode="numeric" pattern="[0-9]{4}" name="card-expire-date-year"
-                        id="card-expire-date-year" placeholder="Yıl" maxlength="4"
-                        class="px-4 py-2 border border-solid border-gray-400 rounded-md outline-none bg-[#EDEDED] w-24 text-lg">
-                </div>
+
+                <!-- ▶ Sağ Ok -->
+                <button type="button" class="slider-btn slider-btn-next absolute right-0 top-1/2 -translate-y-1/2 z-10
+                   bg-white shadow-lg rounded-full p-3 hover:bg-gray-100 transition
+                   disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer" id="sliderNextBtn">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
             </div>
-        </form>
+        </div>
+        <div class="flex flex-col gap-y-4 items-start justify-start">
+            <h1 class="text-4xl font-semibold mt-4">Kart Bilgileri</h1>
+            <form id="payment-form" class="p-4 border border-solid border-black">
+                <div class="input-area flex flex-col justify-start items-start gap-y-2">
+                    <div id="input-box" class="">
+                        <input type="text" name="card-owner-name" id="card-owner-name"
+                            placeholder="Kart üzerindeki Ad Soyad"
+                            class="px-4 py-2 border border-solid border-gray-400 rounded-md outline-none bg-[#EDEDED] w-96 text-lg">
+                    </div>
+                    <div id="input-box" class="">
+                        <input type="text" name="card-number" id="card-number" placeholder="Kart numarası"
+                            class="px-4 py-2 border border-solid border-gray-400 rounded-md outline-none bg-[#EDEDED] w-96 text-lg">
+                    </div>
+                    <div id="input-box" class="flex justify-center items-center gap-x-4">
+                        <input type="text" inputmode="numeric" pattern="(0?[1-9]|1[0-2])" name="card-expire-date-month"
+                            id="card-expire-date-month" placeholder="Ay" maxlength="2"
+                            class="px-4 py-2 border border-solid border-gray-400 rounded-md outline-none bg-[#EDEDED] w-24 text-lg">
+                        <input type="text" inputmode="numeric" pattern="[0-9]{4}" name="card-expire-date-year"
+                            id="card-expire-date-year" placeholder="Yıl" maxlength="4"
+                            class="px-4 py-2 border border-solid border-gray-400 rounded-md outline-none bg-[#EDEDED] w-24 text-lg">
+                    </div>
+                </div>
+            </form>
+        </div>
+
     </div>
     <div id="invoice-area"
         class="flex flex-col justify-between items-start gap-y-4 border-2 border-solid border-gray-300 p-6 h-120 rounded-md">
@@ -50,7 +78,8 @@
             </div>
         </div>
         <div class="w-full">
-            <button id="make-payment-btn" class="px-6 py-2 w-[90%] bg-blue-600 text-white cursor-pointer">Ödemeyi yap</button>
+            <button id="make-payment-btn" class="px-6 py-2 w-[90%] bg-blue-600 text-white cursor-pointer">Ödemeyi
+                yap</button>
         </div>
     </div>
 </section>

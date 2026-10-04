@@ -111,10 +111,23 @@
     const addToCartBtn = document.getElementById("add-to-cart-btn");
     const payFastBtn = document.getElementById("pay-fast-btn");
     const mainArea = document.getElementById("main-area");
+    const littleImages = document.getElementById("little-images");
+    const currentImg = document.getElementById("current-image");
 
     const productId = mainArea.dataset.productId;
     const productName = document.getElementById("product-name").textContent;
     const productImg = document.getElementById("current-image").src;
+    var selectedLittleImgSrc = "";
+
+
+    littleImages.addEventListener("click", async (e)=>{
+        const littleImg = e.target.closest("#little-image");
+        if(!littleImg) return;
+        if(selectedLittleImgSrc == littleImg.src) return;
+        currentImg.src = littleImg.src;
+        selectedLittleImgSrc = littleImg.src;
+    });
+
     addToCartBtn.addEventListener("click", async () => {
         if (addToCartBtn.id == "in-cart-btn") {
             window.location.href = "/cart";

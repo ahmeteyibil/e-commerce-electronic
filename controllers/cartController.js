@@ -104,7 +104,17 @@ const getCartPage = async (req, res) => {
             const { id } = cartIdResults.rows[0];
             console.log("İtemleri çekilecek olan sepetin id'si: ", id);
             // Sepetteki itemleri çek
-            let getItemsQuery = "SELECT row_to_json(ci) AS cart_item, row_to_json(p) AS product FROM cart_items ci JOIN products p ON ci.product_id = p.id WHERE ci.cart_id = $1";
+            let getItemsQuery = `SELECT 
+                row_to_json(ci) AS cart_item,
+                row_to_json(p) AS product,
+                pi.image_url AS product_image
+            FROM cart_items ci 
+            JOIN products p ON ci.product_id = p.id 
+            LEFT JOIN product_images pi 
+                ON pi.product_id = p.id 
+                AND pi.is_primary = true
+            WHERE ci.cart_id = $1
+            `;
             const itemResults = await pool.query(getItemsQuery, [id]);
             cartItemsWithProduct = itemResults.rows;
             // Sepetin toplam maliyetini ve sepetteki item sayısını çek.
@@ -297,7 +307,7 @@ const getMakePaymentPage = async (req, res) => {
             cartId = await cartService.getCartIdByGuestToken(actor.guestToken);
         }
         const itemDatas = await cartService.getCartProductDatas(cartId);
-        res.render("pages/make-payment.ejs", { title: "Ödeme Sayfası" , itemDatas: itemDatas });
+        res.render("pages/make-payment.ejs", { title: "Ödeme Sayfası" , itemDatas: itemDatas, pageScripts: ['/js/payment-items-slider.js'] });
     } catch (err) {
         console.log("Make payment sayfası yüklenirken hata oluştu:", err.message);
     }

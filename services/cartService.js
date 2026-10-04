@@ -45,8 +45,7 @@ const getCartStatus = async (cartID) => {
     }
 }
 const getCartProductDatas = async (cartId) => {
-    const query = `SELECT row_to_json(ci) AS cart_item, row_to_json(p) AS product FROM cart_items ci
-     JOIN products p ON ci.product_id = p.id WHERE ci.cart_id = $1`;
+    const query = `SELECT row_to_json(ci) AS cart_item, row_to_json(p) AS product, pi.image_url AS product_image FROM cart_items ci JOIN products p ON ci.product_id = p.id LEFT JOIN product_images pi ON pi.product_id = p.id AND pi.is_primary = true WHERE ci.cart_id = $1`;
     var items = null;
     try{
         const response = await pool.query(query, [cartId]);

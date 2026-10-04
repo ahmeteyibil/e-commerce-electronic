@@ -12,45 +12,45 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.0/css/all.min.css"
         integrity="sha512-ApSLB1Pd3/bZN8fWB/RG9YhN/7bd9Hkf3AGaE2mPfebjrxagjuBtx2GcgdqIlJkUzwylBo61r9Xa9NmgBI0swA=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <% if (typeof pageStyles !== 'undefined' && pageStyles) { %>
-        <% pageStyles.forEach(style => { %>
+    <% if (typeof pageStyles !=='undefined' && pageStyles) { %>
+        <% pageStyles.forEach(style=> { %>
             <link rel="stylesheet" href="<%= style %>">
-        <% }); %>
-    <% } %>
-    <link rel="apple-touch-icon" sizes="180x180" href="/images/icon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/images/icon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/images/icon/favicon-16x16.png">
-    <link rel="manifest" href="/images/icon/site.webmanifest">
-    <style>
-        .alert-text::after {
-            content: '';
-            background: white;
-            width: 100%;
-            height: 1px;
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            transform-origin: left;
-            /* Soldan sağa erimesi için*/
-            animation: countdown var(--duration, 3s) linear forwards;
-        }
+            <% }); %>
+                <% } %>
+                    <link rel="apple-touch-icon" sizes="180x180" href="/images/icon/apple-touch-icon.png">
+                    <link rel="icon" type="image/png" sizes="32x32" href="/images/icon/favicon-32x32.png">
+                    <link rel="icon" type="image/png" sizes="16x16" href="/images/icon/favicon-16x16.png">
+                    <link rel="manifest" href="/images/icon/site.webmanifest">
+                    <style>
+                        .alert-text::after {
+                            content: '';
+                            background: white;
+                            width: 100%;
+                            height: 1px;
+                            position: absolute;
+                            bottom: -2px;
+                            left: 0;
+                            transform-origin: left;
+                            /* Soldan sağa erimesi için*/
+                            animation: countdown var(--duration, 3s) linear forwards;
+                        }
 
-        @keyframes countdown {
-            from {
-                transform: scaleX(1);
-            }
+                        @keyframes countdown {
+                            from {
+                                transform: scaleX(1);
+                            }
 
-            to {
-                transform: scaleX(0);
-            }
-        }
+                            to {
+                                transform: scaleX(0);
+                            }
+                        }
 
-        input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-    </style>
+                        input::-webkit-outer-spin-button,
+                        input::-webkit-inner-spin-button {
+                            -webkit-appearance: none;
+                            margin: 0;
+                        }
+                    </style>
 </head>
 
 <body class="bg-linear-to-b from-slate-200 to-white text-gray-800 min-h-screen relative">
@@ -69,6 +69,12 @@
         <%- include('../partials/cart-modal') %>
             <script src="/js/cart-modal.js"></script>
             <script src="/js/alert-popup.js"></script>
+            <% if (typeof pageScripts !=='undefined' && pageScripts) { %>
+                <% pageScripts.forEach(script => { %>
+                    <script src="<%= script %>"></script>
+                    <% }); %>
+                        <% } %>
+
 
 
 </body>
