@@ -6,7 +6,8 @@ const {
     increaseQuantity,
     getCartPage,
     removeItem,
-    getMakePaymentPage
+    getMakePaymentPage,
+    makePayment
 } = require('../controllers/cartController');
 const { cartItemUpdateAuthorize } = require('../middlewares/cartMiddlewares');
 
@@ -16,6 +17,7 @@ router.post('/add', addItemToCart);
 router.post('/increase', increaseQuantity);
 router.post('/decrease', decreaseQuantity);
 router.delete('/remove-item', cartItemUpdateAuthorize, removeItem);
+router.post('/pay', makePayment);
 
 
 module.exports = router

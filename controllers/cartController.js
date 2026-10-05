@@ -307,13 +307,19 @@ const getMakePaymentPage = async (req, res) => {
             cartId = await cartService.getCartIdByGuestToken(actor.guestToken);
         }
         const itemDatas = await cartService.getCartProductDatas(cartId);
-        res.render("pages/make-payment.ejs", { title: "Ödeme Sayfası" , itemDatas: itemDatas, pageScripts: ['/js/payment-items-slider.js'] });
+        res.render("pages/make-payment.ejs", { title: "Ödeme Sayfası" , itemDatas: itemDatas, pageScripts: ['/js/payment-items-slider.js', '/js/make-payment.js'], pageStyles: ['/css/payment-items-slider.css'] });
     } catch (err) {
         console.log("Make payment sayfası yüklenirken hata oluştu:", err.message);
     }
 
 }
-
+const makePayment = async (req,res) => {
+    try{
+        
+    }catch(err){
+        console.log("Ödeme işlemi sırasında hata: ", err.message);
+    }
+}
 // Yardımcı fonksiyonlar
 
 const getCartActor = (req) => ({
@@ -327,5 +333,6 @@ module.exports = {
     decreaseQuantity,
     increaseQuantity,
     removeItem,
-    getMakePaymentPage
+    getMakePaymentPage,
+    makePayment
 }
