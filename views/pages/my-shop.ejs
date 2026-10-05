@@ -9,7 +9,7 @@
                 </button>
             </div>
             <% if (products && products.length> 0) { %>
-                <div id="shop-products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div id="shop-products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-y-4 gap-x-2">
                     <% products.forEach(product=> { %>
                         <%- include('../partials/product-my-shop-box', { product }) %>
                             <% }) %>

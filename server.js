@@ -34,7 +34,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(expressLayouts);
 // Formdan gelen URL-encoded verileri okuyabilmek için:
 app.use(express.urlencoded({ extended: true })); // Front-end'den gelen form submitlerinde input bilgilerini req.body içine atar.
-// Eğer JSON verisi alacaksan:
+
 app.use(express.json()); // Front-end'den gelen json isteklerini req.body içine atar.
 app.use(cookieParser()); // Bu middleware, tarayıcıdan gelen cookie’leri okuyup req.cookies nesnesine dönüştürür.
 app.use(session({
