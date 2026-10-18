@@ -36,7 +36,7 @@ const getShopProductsById = async (shopId) => {
 const getCategories = async () => {
     let categories;
     try {
-        const query = "SELECT id,name FROM categories";
+        const query = "SELECT * FROM categories";
         const response = await pool.query(query);
         categories = response.rows;
     } catch (err) {

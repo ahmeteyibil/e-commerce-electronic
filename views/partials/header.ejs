@@ -11,10 +11,11 @@
                         <div class="absolute left-0 mt-1 w-48 bg-[#50A2FF] border border-gray-100 rounded-lg shadow-lg py-1 
                         opacity-0 invisible group-hover:opacity-100 group-hover:visible 
                         transition-all duration-200 ease-in-out z-50">
-                            <a href="/category/electronics"
-                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-600">Elektronik</a>
-                            <a href="/category/home-and-living"
-                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-600">Ev ve Yaşam</a>
+                            <% categories.forEach(category => { %>
+                                <a href="/category/<%= category.slug %>"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-600"><%= category.name %></a>
+                            <% }); %>
+                         
                         </div>
                 </div></li>
             </ul>

@@ -129,11 +129,11 @@ const addItemToShop = async (req, res) => {
 
         // Get item productId
         const productId = itemAddResponse.rows[0].id;
-        const productName = itemAddResponse.rows[0].name;
+        const productReturnedName = itemAddResponse.rows[0].name;
 
         // Set slug
-        const slug = shopService.createSlug(productId, productName);
-        const setSlugQuery = "UPDATE product SET slug = $1 WHERE id = $2";
+        const slug = shopService.createSlug(productId, productReturnedName);
+        const setSlugQuery = "UPDATE products SET slug = $1 WHERE id = $2";
         const setSlugResponse = await pool.query(setSlugQuery, [slug, productId]);
 
         // Add item images to product_images

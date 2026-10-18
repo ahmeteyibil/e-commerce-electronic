@@ -117,6 +117,9 @@ const getCartPage = async (req, res) => {
             `;
             const itemResults = await pool.query(getItemsQuery, [id]);
             cartItemsWithProduct = itemResults.rows;
+            cartItemsWithProduct.forEach(cartItem => {
+                cartItem.product.description = truncateText(cartItem.product.description, 40);
+            });
             // Sepetin toplam maliyetini ve sepetteki item sayısını çek.
             const cartStatus = await cartService.getCartStatus(id);
             cartTotalCount = cartStatus.cartTotalCount;
@@ -307,20 +310,31 @@ const getMakePaymentPage = async (req, res) => {
             cartId = await cartService.getCartIdByGuestToken(actor.guestToken);
         }
         const itemDatas = await cartService.getCartProductDatas(cartId);
-        res.render("pages/make-payment.ejs", { title: "Ödeme Sayfası" , itemDatas: itemDatas, pageScripts: ['/js/payment-items-slider.js', '/js/make-payment.js'], pageStyles: ['/css/payment-items-slider.css'] });
+        itemDatas.forEach(itemData => {
+            itemData.product.description = truncateText(itemData.product.description, 50);
+        });
+
+        res.render("pages/make-payment.ejs", { title: "Ödeme Sayfası", itemDatas: itemDatas, pageScripts: ['/js/payment-items-slider.js', '/js/make-payment.js'], pageStyles: ['/css/payment-items-slider.css'] });
     } catch (err) {
         console.log("Make payment sayfası yüklenirken hata oluştu:", err.message);
     }
 
 }
-const makePayment = async (req,res) => {
-    try{
-        
-    }catch(err){
+
+
+const makePayment = async (req, res) => {
+    try {
+
+    } catch (err) {
         console.log("Ödeme işlemi sırasında hata: ", err.message);
     }
 }
 // Yardımcı fonksiyonlar
+
+const truncateText = (str, maxLength = 100) => {
+    if (!str) return '';
+    return str.length > maxLength ? str.substring(0, maxLength) + '...' : str;
+};
 
 const getCartActor = (req) => ({
     userId: req.user ? req.user.id : null,

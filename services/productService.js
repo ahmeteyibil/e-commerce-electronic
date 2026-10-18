@@ -1,5 +1,28 @@
 const pool = require('../db')
 
+const getAllProducts = async () => {
+    try {
+        const query = `
+        SELECT 
+            p.*,
+            pi.image_url AS primary_image_url
+        FROM products p
+        LEFT JOIN product_images pi
+            ON pi.product_id = p.id
+            AND pi.is_primary = true
+        ORDER BY p.id ASC
+        `;
+        // PostgreSQL'den ürünleri çekiyoruz
+        const result = await pool.query(query);
+        const products = result.rows; // Çekilen ürünler dizisi
+        return products;
+    } catch (err) {
+        console.log("Tüm ürünler çekilirken hata: ", err.message);
+        return [];
+    }
+
+}
+
 const getProductInfos = async (productId) => {
     const query = "SELECT * from products WHERE id = $1";
     let product;
@@ -64,5 +87,6 @@ const getShopInfoForProduct = async (productId) => {
 module.exports = {
     getProductInfos,
     getProductImages,
-    getShopInfoForProduct
+    getShopInfoForProduct,
+    getAllProducts
 }

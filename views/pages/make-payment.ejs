@@ -19,8 +19,6 @@
                     <% itemDatas.forEach(itemData=> { %>
                         <%- include('../partials/payment-item-box', { product: itemData.product, quantity:
                             itemData.cart_item.quantity, product_image: itemData.product_image }) %>
-                            <%- include('../partials/payment-item-box', { product: itemData.product, quantity:
-                            itemData.cart_item.quantity, product_image: itemData.product_image }) %>
                             <% }); %>
                 </div>
 

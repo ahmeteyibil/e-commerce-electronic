@@ -13,12 +13,12 @@
     <!-- Ürün İçeriği -->
     <div class="px-4 py-2 flex flex-col grow text-left">
         <!-- Stok Kodu (Daha kibar ve soluk) -->
-        <span class="text-[.6rem] font-semibold text-gray-400 mb-1 tracking-wider uppercase">
+        <span class="text-[.6rem] text-gray-400 mb-1 tracking-wider uppercase">
             Stok: <%= product.stock_code %>
         </span>
         
         <!-- Ürün Adı -->
-        <h5 class="text-lg font-bold text-gray-800 leading-tight mb-1 grow">
+        <h5 class="text-lg font-semibold text-gray-800 leading-tight mb-1 grow">
             <a href="/product/<%= product.slug %>" class="hover:text-indigo-600 transition-colors duration-200 text-md">
                 <span id="product-name"><%= product.name %></span>
             </a>

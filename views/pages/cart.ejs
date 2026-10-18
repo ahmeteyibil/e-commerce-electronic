@@ -1,37 +1,41 @@
-<div class="flex flex-col gap-y-4">
-    <div class="cart-header">
-        <h1 class="text-4xl capitalize font-bold">Sepetim (<span class="total-count-value">
-                <%= totalCount %>
-            </span>)</h1>
-    </div>
-    <div class="cart-content flex justify-between items-start w-full gap-x-4 min-h-120">
-        <div class="cart-item-boxes flex flex-col gap-y-4 justify-center items-start">
-            <% if(cartItemsWithProduct){ %>
-                <% cartItemsWithProduct.forEach(ciBoxData=> { %>
-                    <%- include('../partials/cart-item-box', { ciBoxData: ciBoxData }) %>
-                        <% }); %>
-                            <% } %>
+<section class="py-4">
+    <div class="flex flex-col gap-y-8">
+        <div class="cart-header">
+            <h1 class="text-4xl capitalize font-bold">Sepetim (<span class="total-count-value">
+                    <%= totalCount %>
+                </span>)</h1>
         </div>
-        <div
-            class="price-table border border-red-300 border-solid rounded-xl p-4 flex justify-center items-center flex-col gap-y-4">
-            <div>Toplam Fiyat:
-                <span class="font-extrabold text-lg">
-                    <span class="total-cost-value">
-                        <%= totalCost %>
-                    </span>₺
-                </span>
+        <div class="cart-content flex justify-between items-start w-full gap-x-4 min-h-120">
+            <div class="cart-item-boxes flex flex-col gap-y-4 justify-center items-start">
+                <% if(cartItemsWithProduct){ %>
+                    <% cartItemsWithProduct.forEach(ciBoxData=> { %>
+                        <%- include('../partials/cart-item-box', { ciBoxData: ciBoxData }) %>
+                            <% }); %>
+                                <% } %>
             </div>
-            
+            <div
+                class="price-table border border-red-300 border-solid rounded-xl p-4 flex justify-center items-center flex-col gap-y-4">
+                <div>Toplam Fiyat:
+                    <span class="font-extrabold text-lg">
+                        <span class="total-cost-value">
+                            <%= totalCost %>
+                        </span>₺
+                    </span>
+                </div>
+
                 <a href="/cart/make-payment">
-                    <button id="pay-btn" class="px-4 py-2 rounded-lg bg-green-700 font-bold text-white outline-none hover:bg-green-900 transition-all duration-300 cursor-pointer">
-                    Ödeme yap
+                    <button id="pay-btn"
+                        class="px-4 py-2 rounded-lg bg-green-700 font-bold text-white outline-none hover:bg-green-900 transition-all duration-300 cursor-pointer">
+                        Ödeme yap
                     </button>
                 </a>
 
+            </div>
         </div>
-    </div>
 
-</div>
+    </div>
+</section>
+
 
 <script>
     const cartItemBoxes = document.querySelector(".cart-item-boxes");

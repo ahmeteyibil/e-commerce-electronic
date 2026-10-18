@@ -1,10 +1,10 @@
-<div class="cart-item-box py-2 px-4 rounded-xl shadow-md border-2 border-red-300 text-center flex justify-between items-center w-240 relative">
+<div class="cart-item-box py-2 px-4 rounded-xl shadow-md border-2 border-black text-center flex justify-between items-center w-240 relative">
 
     <div class="cart-item-content px-2 flex gap-x-4">
         <div class="cart-item-visual border-solid border-black">
             <a href="product/<%= ciBoxData.product.slug %>"><img src="<%= ciBoxData.product_image %>" alt="Example Product Image" class="w-20 h-20"></a>
         </div>
-        <div class="flex flex-col justify-between items-start gap-y-1 text-left  border-solid border-black ">
+        <div class="flex flex-col justify-between items-start gap-y-1 text-left  border-solid border-black overflow-hidden">
             <h5 class="mb-2 hover:text-blue-700 font-bold transition-all duration-200 text-lg">
                 <a href="product/<%= ciBoxData.product.slug %>">
                     <%= ciBoxData.product.name %>
@@ -12,7 +12,7 @@
             </h5>
             <h3>Stok Kodu: <%= ciBoxData.product.stock_code %>
             </h3>
-            <h3>
+            <h3 class="trunc-multi max-w-80">
                 <%= ciBoxData.product.description %>
             </h3>
         </div>

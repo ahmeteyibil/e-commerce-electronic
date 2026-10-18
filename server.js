@@ -11,7 +11,8 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser')
 const { getCartItemCount } = require('./middlewares/cartMiddlewares')
 const { trySetGuestToken, requireAuth } = require('./middlewares/authMiddlewares')
-
+const {setCategories} = require("./middlewares/globalMiddlewares");
+const homeRoutes = require("./routes/homeRoutes");
 const cartRoutes = require('./routes/cartRoutes')
 const productRoutes = require('./routes/productRoutes')
 const authRoutes = require('./routes/authRoutes')
@@ -70,8 +71,11 @@ app.use(async (req, res, next) => {
     next();
 });
 
+
 // Header'da gözükmesi adına sepetteki ürün sayısını hesaplar.
 app.use(getCartItemCount);
+
+app.use(setCategories);
 
 // Sayfaların önbelleğe kaydedilmiş versiyonlarının yüklenmesini engeller, her sayfa gidildiğinde yeniden yüklenir.
 app.use((req, res, next) => {
@@ -83,12 +87,7 @@ app.use((req, res, next) => {
 
 
 // Ana sayfa route'u
-app.get('/', (req, res) => {
-    // views/index.ejs dosyasını render eder ve veri gönderir
-    res.render('pages/index', {
-        title: 'Ana Sayfa'
-    });
-});
+app.use("/", homeRoutes);
 
 app.use('/account', requireAuth, accountRoutes)
 app.use('/cart', requireAuth, cartRoutes);

@@ -1,0 +1,6 @@
+.trunc-multi {
+    display: -webkit-box;
+    line-clamp: 1;       /* Kaç satır görüneceğini belirler */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}

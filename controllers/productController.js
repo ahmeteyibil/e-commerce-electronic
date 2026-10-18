@@ -1,21 +1,9 @@
 const pool = require('../db');
-const { getProductInfos, getProductImages, getShopInfoForProduct } = require('../services/productService');
+const { getProductInfos, getProductImages, getShopInfoForProduct, getAllProducts } = require('../services/productService');
 // Ana sayfa ürünlerini getiren fonksiyon
 const getTrendsPage = async (req, res) => {
     try {
-        const query = `
-        SELECT 
-            p.*,
-            pi.image_url AS primary_image_url
-        FROM products p
-        LEFT JOIN product_images pi
-            ON pi.product_id = p.id
-            AND pi.is_primary = true
-        ORDER BY p.id ASC
-        `;
-        // PostgreSQL'den ürünleri çekiyoruz
-        const result = await pool.query(query);
-        const products = result.rows; // Çekilen ürünler dizisi
+        const products = await getAllProducts();
 
         res.render('pages/trend-products', {
             title: 'Ürünler',
