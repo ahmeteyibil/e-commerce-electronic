@@ -3,7 +3,7 @@
     
     <!-- Ürün Görseli Alanı -->
     <div class="relative overflow-hidden aspect-square bg-gray-100 flex items-center justify-center p-2">
-        <a href="/product/<%= product.id %>" class="block w-full h-full">
+        <a href="/product/<%= product.slug %>" class="block w-full h-full">
             <img src="<%= product.primary_image_url %>" alt="<%= product.name %>" 
                  class="w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-500" 
                  id="product-img">
@@ -19,7 +19,7 @@
         
         <!-- Ürün Adı -->
         <h5 class="text-lg font-bold text-gray-800 leading-tight mb-1 grow">
-            <a href="/product/<%= product.id %>" class="hover:text-indigo-600 transition-colors duration-200 text-md">
+            <a href="/product/<%= product.slug %>" class="hover:text-indigo-600 transition-colors duration-200 text-md">
                 <span id="product-name"><%= product.name %></span>
             </a>
         </h5>

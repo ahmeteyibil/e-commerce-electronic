@@ -28,7 +28,10 @@ const getTrendsPage = async (req, res) => {
 };
 
 const getProductPage = async (req, res) => {
-    const id = Number.parseInt(req.params.id, 10);
+    const slug = req.params.slug;
+    const idxOfSeperator = slug.lastIndexOf("_");
+    const idStr = slug.slice(idxOfSeperator+1);
+    const id = Number.parseInt(idStr, 10);
     if (!Number.isInteger(id)) {
         return res.status(400).send('Geçersiz ürün ID');
     }

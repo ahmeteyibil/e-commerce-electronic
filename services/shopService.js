@@ -1,4 +1,5 @@
 const pool = require('../db');
+const slugify = require('slugify');
 
 const getShopByUserId = async (userId) => {
     const query = "SELECT id, shop_name FROM shops WHERE user_id = $1";
@@ -34,18 +35,25 @@ const getShopProductsById = async (shopId) => {
 
 const getCategories = async () => {
     let categories;
-    try{
+    try {
         const query = "SELECT id,name FROM categories";
         const response = await pool.query(query);
         categories = response.rows;
-    } catch(err){
+    } catch (err) {
         console.log("Veritabanından kategoriler çekilirken hata oluştu: ", err.message);
     }
     return categories;
 }
 
+const createSlug = (productID, productName) => {
+    const baseSlug = slugify(productName, { lower: true, strict: true, locale: 'tr' });
+    const finalSlug = `${baseSlug}_${productID}`;
+    return finalSlug;
+}
+
 module.exports = {
     getShopProductsById,
     getShopByUserId,
-    getCategories
+    getCategories,
+    createSlug
 };

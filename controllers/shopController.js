@@ -87,7 +87,7 @@ const getMyShop = async (req, res) => {
     res.render('./pages/my-shop', { title: "Mağazam", pageStyles: ['/css/my-shop.css'], products: productDatas, categories: categories });
 }
 const addItemToShop = async (req, res) => {
-    let { productName, price, categoryId, description, imgUrl, additionalImgUrls} = req.body;
+    let { productName, price, categoryId, description, imgUrl, additionalImgUrls } = req.body;
     try {
         // User var mı kontrolü
         const user = req.user || null;
@@ -98,7 +98,7 @@ const addItemToShop = async (req, res) => {
             });
         }
         // Ekstra image sınırı aşılmış mı?
-        if(additionalImgUrls.length > 5){
+        if (additionalImgUrls.length > 5) {
             return res.status(401).json({
                 success: false,
                 message: "Ekstra resim sınırı aşıldı."
@@ -118,27 +118,33 @@ const addItemToShop = async (req, res) => {
         productName = productName?.trim();
         description = description?.trim();
         imgUrl = imgUrl?.trim();
+        const tempSlug = `temp-${Date.now()}`;
 
-        const itemAddQuery = `INSERT INTO products (name,description,price,category_id,shop_id)
-        VALUES ($1,$2,$3,$4,$5) 
+        // Add item to database
+        const itemAddQuery = `INSERT INTO products (name,description,price,slug,category_id,shop_id)
+        VALUES ($1,$2,$3,$4,$5,$6) 
         RETURNING *`;
-
-        const itemAddParams = [productName, description, price, categoryId, shopId];
-
+        const itemAddParams = [productName, description, price, tempSlug, categoryId, shopId];
         const itemAddResponse = await pool.query(itemAddQuery, itemAddParams);
 
+        // Get item productId
         const productId = itemAddResponse.rows[0].id;
+        const productName = itemAddResponse.rows[0].name;
 
+        // Set slug
+        const slug = shopService.createSlug(productId, productName);
+        const setSlugQuery = "UPDATE product SET slug = $1 WHERE id = $2";
+        const setSlugResponse = await pool.query(setSlugQuery, [slug, productId]);
+
+        // Add item images to product_images
         const imgAddQuery = `INSERT INTO product_images (product_id, image_url, sort_order, is_primary)
         VALUES ($1,$2,$3,$4)`;
-
         await pool.query(imgAddQuery, [productId, imgUrl, 1, true]);
-
         for (let i = 0; i < additionalImgUrls.length; i++) {
-            await pool.query(imgAddQuery, [productId, additionalImgUrls[i], i+2, false]);
+            await pool.query(imgAddQuery, [productId, additionalImgUrls[i], i + 2, false]);
         }
-        
-        if (itemAddResponse.rowCount > 0) {
+
+        if (itemAddResponse.rowCount > 0 && setSlugResponse.rowCount > 0) {
             const product = itemAddResponse.rows[0];
             return res.status(201).json({
                 success: true,

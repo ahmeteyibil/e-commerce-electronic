@@ -39,6 +39,12 @@
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="0.00">
                     </div>
+                    <!-- <div class="input-box">
+                        <label for="new-product-slug" class="block text-sm font-medium text-gray-700 mb-1">Slug</label>
+                        <input id="new-product-slug" type="text" required name="slug"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Slug(url)">
+                    </div> -->
                     <div class="input-box">
                         <label for="new-product-category"
                             class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
@@ -59,6 +65,7 @@
                         <input id="new-product-image-url" required type="text" name="imgUrl"
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="https://...">
+
                     </div>
                 </div>
 
@@ -77,11 +84,11 @@
                 </div>
                 <div class="md:col-span-2 flex justify-end items-center">
                     <button id="add-product-btn" type="submit"
-                    class="bg-blue-700 hover:bg-blue-900 text-white font-medium px-5 py-2.5 rounded-lg transition-all duration-200 cursor-pointer">
-                    Ürün Ekle
-                </button>
+                        class="bg-blue-700 hover:bg-blue-900 text-white font-medium px-5 py-2.5 rounded-lg transition-all duration-200 cursor-pointer">
+                        Ürün Ekle
+                    </button>
                 </div>
-                
+
             </form>
         </div>
 
@@ -93,23 +100,27 @@
     const addAdditionalImageBtn = document.getElementById("add-additional-image-btn");
     const imageInputBoxes = document.getElementById("image-input-boxes");
 
-    var additionalImageInputCount = 0;
+    var extraImgCount = 0;
     const maxAddImageInput = 5;
 
     addAdditionalImageBtn.addEventListener("click", async (e) => {
-        if (additionalImageInputCount >= maxAddImageInput) {
+        if (extraImgCount >= maxAddImageInput) {
             return;
         }
-        additionalImageInputCount++;
+        extraImgCount++;
         const newImageInputBox = document.createElement("div");
-        newImageInputBox.innerHTML = `<div>
-            <label for="new-product-additional-image-${additionalImageInputCount}" class="input-box block text-sm font-medium text-gray-700 mb-1">Ek Görsel ${additionalImageInputCount} URL</label>
-            <input id="new-product-additional-image-${additionalImageInputCount}" type="text" name="additionalImgUrl"
-                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        newImageInputBox.className = "extra-img-input-box"
+        newImageInputBox.innerHTML = `
+            <label for="new-product-additional-image-${extraImgCount}" class="block text-sm font-medium text-gray-700 mb-1">Ek Görsel URL</label>
+            <input id="new-product-additional-image-${extraImgCount}" type="text" name="additionalImgUrl"
+                class="w-[95%] border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="https://...">
-        </div>`;
+            <button type="button" class="additional-img-delete-btn p-1 cursor-pointer bg-red-700 text-white rounded-lg">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                        `;
         imageInputBoxes.appendChild(newImageInputBox);
-        if (additionalImageInputCount >= maxAddImageInput) {
+        if (extraImgCount >= maxAddImageInput) {
             // button becomes invisible
             addAdditionalImageBtn.classList.toggle('insivible', true);
             addAdditionalImageBtn.classList.toggle('hidden', true);
@@ -119,14 +130,22 @@
 
     refreshProductsBtn.addEventListener("click", async (e) => {
 
+    });
 
-        // const response = await fetch('/get-my-products', {
-        //     method: "GET",
-        //     headers: {
-        //         "Content-Type": "application/json"
-        //     },
-
-        // })
+    imageInputBoxes.addEventListener("click", async (e) => {
+        console.log("imageInputBoxes click event");
+        const deleteExtraImgBtn = e.target.closest(".additional-img-delete-btn");
+        if (!deleteExtraImgBtn) {
+            console.log("deleteExtraImgBtn bulunamadi");
+            return;
+        }
+        const extraImgBox = deleteExtraImgBtn.closest(".extra-img-input-box");
+        if (!extraImgBox) {
+            console.log("extraImgBox button bulunamadi");
+            return;
+        }
+        extraImgBox.remove();
+        extraImgCount--;
     });
 
     addProductForm.addEventListener("submit", async (e) => {

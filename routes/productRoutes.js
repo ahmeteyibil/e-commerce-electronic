@@ -4,7 +4,7 @@ const productController = require('../controllers/productController');
 
 // Anasayfa isteği geldiğinde controller'daki fonksiyonu çalıştır
 router.get('/trend-products', productController.getTrendsPage);
-router.get('/product/:id', productController.getProductPage);
+router.get('/product/:slug', productController.getProductPage);
 
 
 module.exports = router;
